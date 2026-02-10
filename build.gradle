@@ -42,6 +42,12 @@ dependencies {
     runtimeOnly 'org.jmonkeyengine:jme3-jogg:' + jmonkeyengineVersion
     runtimeOnly 'org.jmonkeyengine:jme3-plugins:' + jmonkeyengineVersion
 
+    implementation 'org.codehaus.groovy:groovy:3.0.21'
+    implementation 'org.codehaus.groovy:groovy:3.0.21'
+    implementation 'org.codehaus.groovy:groovy-jsr223:3.0.21'
+
+
+
     implementation 'org.jmonkeyengine:jme3-effects:' + jmonkeyengineVersion
     implementation 'org.jmonkeyengine:jme3-jbullet:' + jmonkeyengineVersion
     runtimeOnly 'org.jmonkeyengine:jme3-lwjgl3:' + jmonkeyengineVersion
