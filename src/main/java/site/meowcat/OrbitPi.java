@@ -6,6 +6,7 @@ import com.jme3.math.ColorRGBA;
 import com.jme3.renderer.RenderManager;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.shape.Box;
+import com.jme3.system.AppSettings;
 import site.meowcat.ui.MainMenuState;
 
 /**
@@ -17,12 +18,20 @@ public class OrbitPi extends SimpleApplication {
 
     public static void main(String[] args) {
         OrbitPi app = new OrbitPi();
+        AppSettings settings = new AppSettings(true);
+        settings.setTitle("Orbit \u03C0");
+        settings.setFullscreen(false);
+        settings.setResolution(1280, 720);
+        
+        app.setSettings(settings);
         app.setShowSettings(false); //Settings dialog not supported on mac
         app.start();
     }
 
     @Override
     public void simpleInitApp() {
+        setDisplayStatView(false);
+        setDisplayFps(false);
         flyCam.setEnabled(false);
         stateManager.attach(new MainMenuState());
     }
