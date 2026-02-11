@@ -18,7 +18,8 @@ public class PlayerControl extends AbstractControl implements ActionListener{
         input.addMapping("right", new KeyTrigger(KeyInput.KEY_D));
         input.addMapping("forward", new KeyTrigger(KeyInput.KEY_W));
         input.addMapping("backward", new KeyTrigger(KeyInput.KEY_S));
-        input.addListener(this, "left", "right", "forward", "backward");
+        input.addMapping("enter", new KeyTrigger(KeyInput.KEY_SPACE));
+        input.addListener(this, "left", "right", "forward", "backward", "enter");
     }
     @Override
     public void onAction(String name, boolean pressed, float tpf) {
