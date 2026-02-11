@@ -33,8 +33,8 @@ public class MainMenuState extends BaseAppState {
         window = new Container();
         app.getGuiNode().attachChild(window);
         window.addChild(new Label("OrbitPi", new ElementId("title"))); // glass doesn't allow for "π"
-        window.addChild(new Button("Start Game!"))
-                .addClickCommands(source -> startGame());
+        Button startButton = window.addChild(new Button("Start Game!"));
+        startButton.addClickCommands(source -> startGame());
         
         Button settingsButton = window.addChild(new Button("Settings"));
         settingsButton.addClickCommands(source -> System.out.println("Settings not implemented yet"));
