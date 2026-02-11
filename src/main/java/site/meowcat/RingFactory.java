@@ -5,10 +5,13 @@ import com.jme3.material.Material;
 import com.jme3.math.*;
 import com.jme3.scene.*;
 import com.jme3.scene.shape.Torus;
+import com.jme3.font.BitmapFont;
+import com.jme3.font.BitmapText;
 
 public class RingFactory {
 
     public static void spawnRingCircle(SimpleApplication app, Node parent) {
+        BitmapFont font = app.getAssetManager().loadFont("Interface/Fonts/Default.fnt");
 
         float radius = 10f;
 
@@ -23,19 +26,33 @@ public class RingFactory {
             );
 
             Torus torus = new Torus(16, 16, 0.2f, 1f);
-            Geometry ring = new Geometry("Ring-" + i, torus);
+            Geometry ringGeom = new Geometry("RingGeom-" + i, torus);
 
             Material mat = new Material(
                     app.getAssetManager(),
                     "Common/MatDefs/Misc/Unshaded.j3md"
             );
             mat.setColor("Color", ColorRGBA.randomColor());
-            ring.setMaterial(mat);
+            ringGeom.setMaterial(mat);
+            
+            Node ringNode = new Node("Ring-" + i);
+            ringNode.setLocalTranslation(pos);
+            ringNode.setUserData("digit", i);
+            ringNode.attachChild(ringGeom);
 
-            ring.setLocalTranslation(pos);
-            ring.setUserData("digit", i);
+            BitmapText label = new BitmapText(font);
+            label.setText(String.valueOf(i));
+            label.setSize(1.5f);
+            float width = label.getLineWidth();
+            float height = label.getLineHeight();
+            label.setLocalTranslation(-width / 2, height / 2, 0);
+            
+            Node labelNode = new Node("LabelNode");
+            labelNode.setLocalTranslation(0, 1.5f, 0);
+            labelNode.attachChild(label);
+            ringNode.attachChild(labelNode);
 
-            parent.attachChild(ring);
+            parent.attachChild(ringNode);
         }
     }
 }

@@ -2,6 +2,8 @@ package site.meowcat.ui;
 import com.jme3.app.Application;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.BaseAppState;
+import com.jme3.math.ColorRGBA;
+import com.jme3.math.Vector3f;
 import com.simsilica.lemur.*;
 import com.simsilica.lemur.style.BaseStyles;
 import com.simsilica.lemur.style.ElementId;
@@ -27,8 +29,8 @@ public class MainMenuState extends BaseAppState {
         Attributes titleAttrs = styles.getSelector("title", "glass");
         titleAttrs.set("fontSize", 32f);
         titleAttrs.set("textHAlignment", HAlignment.Center);
-        titleAttrs.set("color", new com.jme3.math.ColorRGBA(0.8f, 0.9f, 1.0f, 0.85f));
-        titleAttrs.set("margin", new com.simsilica.lemur.Insets3f(20, 0, 20, 0));
+        titleAttrs.set("color", new ColorRGBA(0.8f, 0.9f, 1.0f, 0.85f));
+        titleAttrs.set("margin", new Insets3f(20, 0, 20, 0));
 
         window = new Container();
         app.getGuiNode().attachChild(window);
@@ -44,7 +46,7 @@ public class MainMenuState extends BaseAppState {
 
         // Add some margin to buttons
         Attributes buttonAttrs = styles.getSelector(Button.ELEMENT_ID, "glass");
-        buttonAttrs.set("margin", new com.simsilica.lemur.Insets3f(10, 20, 10, 20));
+        buttonAttrs.set("margin", new Insets3f(10, 20, 10, 20));
         buttonAttrs.set("fontSize", 32f);
         
         centerWindow();
@@ -56,7 +58,7 @@ public class MainMenuState extends BaseAppState {
         
         float x = app.getCamera().getWidth() / 2f;
         float y = app.getCamera().getHeight() / 2f;
-        com.jme3.math.Vector3f size = window.getPreferredSize();
+        Vector3f size = window.getPreferredSize();
         
         // Scale the window to be more visible on high res screens if needed
         // but let's first ensure it's centered

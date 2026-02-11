@@ -8,6 +8,7 @@ import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
+import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Sphere;
 import site.meowcat.managers.PiManager;
 import site.meowcat.player.PlayerControl;
@@ -34,6 +35,15 @@ public class GameState extends BaseAppState {
         gameRoot.attachChild(player);
         app.getCamera().setLocation(new Vector3f(0,15,20));
         app.getCamera().lookAt(Vector3f.ZERO, Vector3f.UNIT_Y);
+        for (Spatial ring : gameRoot.getChildren()) {
+            if (ring instanceof Node) {
+                Node ringNode = (Node) ring;
+                Spatial labelNode = ringNode.getChild("LabelNode");
+                if (labelNode != null) {
+                    labelNode.lookAt(app.getCamera().getLocation(), Vector3f.UNIT_Y);
+                }
+            }
+        }
     }
 
     @Override
@@ -48,8 +58,8 @@ public class GameState extends BaseAppState {
         app.getRootNode().attachChild(gameRoot);
 
         System.out.println("Target digit: " + pi.currentDigit());
-        spawnPlayer();
         spawnRings();
+        spawnPlayer();
     }
 
     private void spawnRings() {

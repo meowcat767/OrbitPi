@@ -72,7 +72,7 @@ public class PlayerControl extends AbstractControl implements ActionListener{
                 angle = FastMath.TWO_PI * (10 - currentTargetRing) / 10f;
                 if (angle >= FastMath.TWO_PI) angle -= FastMath.TWO_PI;
 
-                lastRingDigit = currentTargetRing;
+                lastRingDigit = (10 - currentTargetRing) % 10;
                 
                 // Move to next ring for next bounce
                 currentTargetRing = (currentTargetRing + 1) % 10;
