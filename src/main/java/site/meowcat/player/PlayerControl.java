@@ -21,9 +21,18 @@ public class PlayerControl extends AbstractControl implements ActionListener{
 
     private int lastRingDigit = -1;
     private site.meowcat.managers.PiManager piManager;
+    private Runnable onCorrectHit;
+
+    public int getLastRingDigit() {
+        return lastRingDigit;
+    }
 
     public void setPiManager(site.meowcat.managers.PiManager piManager) {
         this.piManager = piManager;
+    }
+
+    public void setOnCorrectHit(Runnable onCorrectHit) {
+        this.onCorrectHit = onCorrectHit;
     }
 
     public void setupInput(InputManager input){
@@ -34,11 +43,16 @@ public class PlayerControl extends AbstractControl implements ActionListener{
     private void ringHit(int digit) {
         if (piManager == null) return;
         if (digit == piManager.currentDigit()) {
-            piManager.advance();
-            System.out.println("Correct! Next: " + piManager.currentDigit());
+            if (onCorrectHit != null) {
+                onCorrectHit.run();
+            } else {
+                piManager.advance();
+                System.out.println("Correct! Next: " + piManager.currentDigit());
+            }
         } else {
             System.out.println("Wrong digit! Expected: " + piManager.currentDigit() + " but got: " + digit);
         }
+
     }
 
     @Override
@@ -46,10 +60,12 @@ public class PlayerControl extends AbstractControl implements ActionListener{
         if (!pressed || !name.equals("enter")) return;
 
         // Space pressed - check if we are currently "hitting" a ring
+        // Ring radius is 10, torus tube radius is 0.2. 
+        // We consider a hit if radius is between 9 and 11 (maxRadius is 10)
         if (!bouncingOut && radius > maxRadius - 1.5f) {
              ringHit(lastRingDigit);
         } else {
-            System.out.println("Miss!");
+            System.out.println("Miss! radius: " + radius + " bouncingOut: " + bouncingOut);
         }
     }
 
@@ -67,15 +83,9 @@ public class PlayerControl extends AbstractControl implements ActionListener{
                 // When we hit the max radius, we should be at a ring.
                 // We want to hit EACH ring clockwise.
                 // Rings are at angles: TWO_PI * i / 10f;
-                // Clockwise means decreasing angle.
+                // Clockwise means decreasing index or (10 - index) increasing.
                 
-                angle = FastMath.TWO_PI * (10 - currentTargetRing) / 10f;
-                if (angle >= FastMath.TWO_PI) angle -= FastMath.TWO_PI;
-
                 lastRingDigit = (10 - currentTargetRing) % 10;
-                
-                // Move to next ring for next bounce
-                currentTargetRing = (currentTargetRing + 1) % 10;
             }
         } else {
             radius -= radialVelocity * tpf;
@@ -83,6 +93,9 @@ public class PlayerControl extends AbstractControl implements ActionListener{
                 radius = 0;
                 bouncingOut = true;
                 
+                // Move to next ring for next bounce
+                currentTargetRing = (currentTargetRing + 1) % 10;
+
                 // Set the angle for the next bounce immediately so it's visible during the flight out
                 angle = FastMath.TWO_PI * (10 - currentTargetRing) / 10f;
                 if (angle >= FastMath.TWO_PI) angle -= FastMath.TWO_PI;
@@ -92,6 +105,11 @@ public class PlayerControl extends AbstractControl implements ActionListener{
         float x = FastMath.cos(angle) * radius;
         float z = FastMath.sin(angle) * radius;
         spatial.setLocalTranslation(x, 0, z);
+        
+        // Update billboard labels to face camera
+        // In JME, controls are updated after the spatial's translation is set.
+        // But we want to update the rings' labels, not just the player.
+        // This is better handled in GameState.update or by a separate BillboardControl.
     }
 
     @Override

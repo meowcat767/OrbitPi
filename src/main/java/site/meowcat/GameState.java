@@ -12,6 +12,8 @@ import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Sphere;
 import site.meowcat.managers.PiManager;
 import site.meowcat.player.PlayerControl;
+import com.jme3.font.BitmapFont;
+import com.jme3.font.BitmapText;
 
 public class GameState extends BaseAppState {
 
@@ -21,6 +23,26 @@ public class GameState extends BaseAppState {
     private Geometry player;
     private PlayerControl playerControl;
     private float arenaRadius = 10f;
+    private BitmapText digitHud;
+
+    private void setupHud() {
+        BitmapFont font = app.getAssetManager().loadFont("Interface/Fonts/Default.fnt");
+        digitHud = new BitmapText(font);
+        digitHud.setSize(font.getCharSet().getRenderedSize() * 2);
+        updateHudText();
+        float x = app.getCamera().getWidth() / 2f - digitHud.getLineWidth() / 2f;
+        float y = app.getCamera().getHeight() - 20;
+        digitHud.setLocalTranslation(x, y, 0);
+        app.getGuiNode().attachChild(digitHud);
+    }
+
+    public void updateHudText() {
+        digitHud.setText(
+                "Next digit: " + pi.currentDigit()
+        );
+        float x = app.getCamera().getWidth() / 2f - digitHud.getLineWidth()/ 2f;
+        digitHud.setLocalTranslation(x, digitHud.getLocalTranslation().y, 0);
+    }
 
     private void spawnPlayer() {
         var sphere = new Sphere(16,16,0.5f);
@@ -30,11 +52,24 @@ public class GameState extends BaseAppState {
         player.setMaterial(mat);
         playerControl = new PlayerControl();
         playerControl.setPiManager(pi);
+        playerControl.setOnCorrectHit(() -> {
+            // Using the requested logic
+            int digit = playerControl.getLastRingDigit();
+            if (digit == pi.currentDigit()) {
+                pi.advance();
+                updateHudText();
+                System.out.println("Correct!");
+            }
+        });
         player.addControl(playerControl);
         playerControl.setupInput(app.getInputManager());
         gameRoot.attachChild(player);
         app.getCamera().setLocation(new Vector3f(0,15,20));
         app.getCamera().lookAt(Vector3f.ZERO, Vector3f.UNIT_Y);
+    }
+
+    @Override
+    public void update(float tpf) {
         for (Spatial ring : gameRoot.getChildren()) {
             if (ring instanceof Node) {
                 Node ringNode = (Node) ring;
@@ -44,12 +79,7 @@ public class GameState extends BaseAppState {
                 }
             }
         }
-    }
 
-    @Override
-    public void update(float tpf) {
-        // PlayerControl handles its own orbital movement and bouncing.
-        // We can remove the old collision and movement logic here.
     }
 
     @Override
@@ -59,6 +89,7 @@ public class GameState extends BaseAppState {
 
         System.out.println("Target digit: " + pi.currentDigit());
         spawnRings();
+        setupHud();
         spawnPlayer();
     }
 
