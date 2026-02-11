@@ -7,6 +7,8 @@ import com.simsilica.lemur.style.BaseStyles;
 import com.simsilica.lemur.style.ElementId;
 import com.simsilica.lemur.style.Styles;
 import com.simsilica.lemur.style.Attributes;
+import site.meowcat.GameState;
+
 
 public class MainMenuState extends BaseAppState {
 
@@ -63,9 +65,8 @@ public class MainMenuState extends BaseAppState {
 
     private void startGame() {
         window.removeFromParent();
+        getStateManager().attach(new GameState());
         getStateManager().detach(this);
-        // TODO: write game
-        System.out.println("i cannot drink 50 tons of milk");
     }
 
     @Override
