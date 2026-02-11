@@ -26,8 +26,8 @@ public class PlayerControl extends AbstractControl implements ActionListener{
         switch (name){
             case "left" -> velocity.x -= speed;
             case "right" -> velocity.x += speed;
-            case "forward" -> velocity.z += speed;
-            case "backward" -> velocity.z -= speed;
+            case "backward" -> velocity.z += speed;
+            case "forward" -> velocity.z -= speed;
         }
     }
 
