@@ -9,6 +9,7 @@ import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.control.AbstractControl;
+import site.meowcat.GameState;
 
 public class PlayerControl extends AbstractControl implements ActionListener{
     private float angle = 0f;
@@ -51,6 +52,8 @@ public class PlayerControl extends AbstractControl implements ActionListener{
             }
         } else {
             System.out.println("Wrong digit! Expected: " + piManager.currentDigit() + " but got: " + digit);
+            GameState gameState = new  GameState();
+            gameState.applyPenalty();
         }
 
     }

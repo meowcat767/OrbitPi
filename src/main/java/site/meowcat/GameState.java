@@ -14,6 +14,7 @@ import site.meowcat.managers.PiManager;
 import site.meowcat.player.PlayerControl;
 import com.jme3.font.BitmapFont;
 import com.jme3.font.BitmapText;
+import site.meowcat.ui.MainMenuState;
 
 public class GameState extends BaseAppState {
 
@@ -24,6 +25,8 @@ public class GameState extends BaseAppState {
     private PlayerControl playerControl;
     private float arenaRadius = 10f;
     private BitmapText digitHud;
+    private int lives = 3; // TODO: UI TO CHANGE LIFE COUNT
+    private BitmapText livesHud;
 
     private void setupHud() {
         BitmapFont font = app.getAssetManager().loadFont("Interface/Fonts/Default.fnt");
@@ -34,6 +37,34 @@ public class GameState extends BaseAppState {
         float y = app.getCamera().getHeight() - 20;
         digitHud.setLocalTranslation(x, y, 0);
         app.getGuiNode().attachChild(digitHud);
+    }
+
+    private void setupLivesHud() {
+        BitmapFont font = app.getAssetManager().loadFont("Interface/Fonts/Default.fnt");
+        livesHud = new BitmapText(font);
+        livesHud.setSize(font.getCharSet().getRenderedSize() * 1.5f);
+        updateLivesHud();
+        livesHud.setLocalTranslation(20, app.getCamera().getHeight() - 20, 0);
+        app.getGuiNode().attachChild(livesHud);
+    }
+
+    public void updateLivesHud() {
+        livesHud.setText("Lives: " + lives);
+    }
+
+    public void applyPenalty() {
+        lives--; // It's like C--, but for lives!
+        updateLivesHud();
+        System.out.println("OOF!  " + lives);
+        if (lives <= 0) {
+            gameOver();
+        }
+    }
+
+    public void gameOver() {
+        System.out.println("!!! EXPECTED STOP !!!");
+        getStateManager().attach(new MainMenuState());
+        getStateManager().detach(this);
     }
 
     public void updateHudText() {
@@ -90,6 +121,7 @@ public class GameState extends BaseAppState {
         System.out.println("Target digit: " + pi.currentDigit());
         spawnRings();
         setupHud();
+        setupLivesHud();
         spawnPlayer();
     }
 
