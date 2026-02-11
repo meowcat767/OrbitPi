@@ -69,6 +69,8 @@ public class PlayerControl extends AbstractControl implements ActionListener{
              ringHit(lastRingDigit);
         } else {
             System.out.println("Miss! radius: " + radius + " bouncingOut: " + bouncingOut);
+            GameState gameState = new  GameState();
+            gameState.applyPenalty();
         }
     }
 

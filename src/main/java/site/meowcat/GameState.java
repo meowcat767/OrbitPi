@@ -15,6 +15,10 @@ import site.meowcat.player.PlayerControl;
 import com.jme3.font.BitmapFont;
 import com.jme3.font.BitmapText;
 import site.meowcat.ui.MainMenuState;
+import javax.swing.*;
+import java.awt.*;
+
+import javax.swing.*;
 
 public class GameState extends BaseAppState {
 
@@ -49,6 +53,10 @@ public class GameState extends BaseAppState {
     }
 
     public void updateLivesHud() {
+        if(livesHud == null) {
+            JOptionPane.showMessageDialog(null, "A fatal error has occurred. " +
+                    "This is most likely an error with OrbitPi. Please consult the JMonkeyEngine3 documentation for more information.");
+        } // just a bit of swing to mix it up
         livesHud.setText("Lives: " + lives);
     }
 
