@@ -10,8 +10,11 @@ import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.control.AbstractControl;
 import site.meowcat.GameState;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class PlayerControl extends AbstractControl implements ActionListener{
+    private static final Logger logger = LogManager.getLogger(PlayerControl.class);
     private float angle = 0f;
     private float radius = 0f;
     private float orbitSpeed = 0f; // Speed will be handled by angle increment per bounce
@@ -53,7 +56,7 @@ public class PlayerControl extends AbstractControl implements ActionListener{
                 onCorrectHit.run();
             } else {
                 piManager.advance();
-                System.out.println("Correct! Next: " + piManager.currentDigit());
+                logger.info("Advance to " + piManager.currentDigit());
             }
         } else {
             System.out.println("Wrong digit! Expected: " + piManager.currentDigit() + " but got: " + digit);

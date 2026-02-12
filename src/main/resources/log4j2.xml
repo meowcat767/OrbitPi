@@ -17,9 +17,7 @@
     <Loggers>
         <Root level="debug">
             <AppenderRef ref="STDOUT"/>
-            <!-- Include the below if you would like your logs outputted to a file
             <AppenderRef ref="FILE_LOG"/>
-            -->
         </Root>
     </Loggers>
 </Configuration>
