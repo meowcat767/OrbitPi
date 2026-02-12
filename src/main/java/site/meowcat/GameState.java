@@ -56,6 +56,7 @@ public class GameState extends BaseAppState {
         if(livesHud == null) {
             JOptionPane.showMessageDialog(null, "A fatal error has occurred. " +
                     "This is most likely an error with OrbitPi. Please consult the JMonkeyEngine3 documentation for more information.");
+            return;
         } // just a bit of swing to mix it up
         livesHud.setText("Lives: " + lives);
     }
@@ -91,6 +92,7 @@ public class GameState extends BaseAppState {
         player.setMaterial(mat);
         playerControl = new PlayerControl();
         playerControl.setPiManager(pi);
+        playerControl.setGameState(this);
         playerControl.setOnCorrectHit(() -> {
             // Using the requested logic
             int digit = playerControl.getLastRingDigit();

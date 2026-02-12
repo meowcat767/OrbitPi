@@ -22,6 +22,7 @@ public class PlayerControl extends AbstractControl implements ActionListener{
 
     private int lastRingDigit = -1;
     private site.meowcat.managers.PiManager piManager;
+    private site.meowcat.GameState gameState;
     private Runnable onCorrectHit;
 
     public int getLastRingDigit() {
@@ -30,6 +31,10 @@ public class PlayerControl extends AbstractControl implements ActionListener{
 
     public void setPiManager(site.meowcat.managers.PiManager piManager) {
         this.piManager = piManager;
+    }
+
+    public void setGameState(site.meowcat.GameState gameState) {
+        this.gameState = gameState;
     }
 
     public void setOnCorrectHit(Runnable onCorrectHit) {
@@ -52,8 +57,9 @@ public class PlayerControl extends AbstractControl implements ActionListener{
             }
         } else {
             System.out.println("Wrong digit! Expected: " + piManager.currentDigit() + " but got: " + digit);
-            GameState gameState = new  GameState();
-            gameState.applyPenalty();
+            if (gameState != null) {
+                gameState.applyPenalty();
+            }
         }
 
     }
@@ -69,8 +75,9 @@ public class PlayerControl extends AbstractControl implements ActionListener{
              ringHit(lastRingDigit);
         } else {
             System.out.println("Miss! radius: " + radius + " bouncingOut: " + bouncingOut);
-            GameState gameState = new  GameState();
-            gameState.applyPenalty();
+            if (gameState != null) {
+                gameState.applyPenalty();
+            }
         }
     }
 
