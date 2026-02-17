@@ -10,15 +10,12 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Sphere;
+import site.meowcat.Interfaces.GameMode;
 import site.meowcat.managers.PiManager;
 import site.meowcat.player.PlayerControl;
 import com.jme3.font.BitmapFont;
 import com.jme3.font.BitmapText;
 import site.meowcat.ui.MainMenuState;
-import javax.swing.*;
-import java.awt.*;
-
-import javax.swing.*;
 
 public class GameState extends BaseAppState {
 
@@ -29,8 +26,9 @@ public class GameState extends BaseAppState {
     private PlayerControl playerControl;
     private float arenaRadius = 10f;
     private BitmapText digitHud;
-    private int lives = 3; // TODO: UI TO CHANGE LIFE COUNT
+    private int lives = 3;
     private BitmapText livesHud;
+    private GameMode mode;
 
     private void setupHud() {
         BitmapFont font = app.getAssetManager().loadFont("Interface/Fonts/Default.fnt");
@@ -53,12 +51,9 @@ public class GameState extends BaseAppState {
     }
 
     public void updateLivesHud() {
-        if(livesHud == null) {
-            JOptionPane.showMessageDialog(null, "A fatal error has occurred. " +
-                    "This is most likely an error with OrbitPi. Please consult the JMonkeyEngine3 documentation for more information.");
-            return;
-        } // just a bit of swing to mix it up
-        livesHud.setText("Lives: " + lives);
+        if(livesHud != null) {
+            livesHud.setText("Lives: " + lives);
+        }
     }
 
     public void applyPenalty() {

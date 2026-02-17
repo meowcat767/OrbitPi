@@ -33,13 +33,15 @@ public class MainMenuState extends BaseAppState {
         titleAttrs.set("margin", new Insets3f(20, 0, 20, 0));
 
         window = new Container();
-        app.getGuiNode().attachChild(window);
         window.addChild(new Label("OrbitPi", new ElementId("title"))); // glass doesn't allow for "π"
         Button startButton = window.addChild(new Button("Start Game!"));
         startButton.addClickCommands(source -> startGame());
         
         Button settingsButton = window.addChild(new Button("Settings"));
-        settingsButton.addClickCommands(source -> System.out.println("Settings not implemented yet"));
+        settingsButton.addClickCommands(source -> {
+            getStateManager().attach(new SettingsState());
+            getStateManager().detach(this);
+        });
         
         Button quitButton = window.addChild(new Button("Quit"));
         quitButton.addClickCommands(source -> app.stop());
@@ -66,23 +68,21 @@ public class MainMenuState extends BaseAppState {
     }
 
     private void startGame() {
-        window.removeFromParent();
         getStateManager().attach(new GameState());
         getStateManager().detach(this);
     }
 
     @Override
     protected void cleanup(Application application) {
-
     }
 
     @Override
     protected void onEnable() {
-
+        app.getGuiNode().attachChild(window);
     }
 
     @Override
     protected void onDisable() {
-
+        window.removeFromParent();
     }
 }
