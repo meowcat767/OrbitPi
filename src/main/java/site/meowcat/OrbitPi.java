@@ -39,6 +39,9 @@ public class OrbitPi extends SimpleApplication {
         com.simsilica.lemur.style.BaseStyles.loadGlassStyle();
         com.simsilica.lemur.GuiGlobals.getInstance().getStyles().setDefaultStyle("glass");
 
+        site.meowcat.managers.AudioManager.getInstance().initialize(assetManager, rootNode);
+        site.meowcat.managers.AudioManager.getInstance().playBGM("peak.ogg");
+
         stateManager.attach(new MainMenuState());
     }
 

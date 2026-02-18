@@ -33,16 +33,23 @@ public class MainMenuState extends BaseAppState {
         window = new Container();
         window.addChild(new Label("OrbitPi", new ElementId("title"))); // glass doesn't allow for "π"
         Button startButton = window.addChild(new Button("Start Game!"));
-        startButton.addClickCommands(source -> startGame());
+        startButton.addClickCommands(source -> {
+            site.meowcat.managers.AudioManager.getInstance().playSFX("click.ogg");
+            startGame();
+        });
 
         Button settingsButton = window.addChild(new Button("Settings"));
         settingsButton.addClickCommands(source -> {
+            site.meowcat.managers.AudioManager.getInstance().playSFX("click.ogg");
             getStateManager().attach(new SettingsState());
             getStateManager().detach(this);
         });
 
         Button quitButton = window.addChild(new Button("Quit"));
-        quitButton.addClickCommands(source -> app.stop());
+        quitButton.addClickCommands(source -> {
+            site.meowcat.managers.AudioManager.getInstance().playSFX("click.ogg");
+            app.stop();
+        });
 
         // Add some margin to buttons
         Attributes buttonAttrs = styles.getSelector(Button.ELEMENT_ID, "glass");

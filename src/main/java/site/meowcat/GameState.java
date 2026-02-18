@@ -16,6 +16,7 @@ import site.meowcat.player.PlayerControl;
 import com.jme3.font.BitmapFont;
 import com.jme3.font.BitmapText;
 import site.meowcat.ui.MainMenuState;
+import com.jme3.audio.AudioNode;
 
 public class GameState extends BaseAppState {
 
@@ -63,6 +64,7 @@ public class GameState extends BaseAppState {
     public void applyPenalty() {
         lives--; // It's like C--, but for lives!
         updateLivesHud();
+        site.meowcat.managers.AudioManager.getInstance().playSFX("miss.ogg");
         System.out.println("OOF!  " + lives);
         if (lives <= 0) {
             gameOver();
@@ -101,6 +103,7 @@ public class GameState extends BaseAppState {
             if (digit == pi.currentDigit()) {
                 pi.advance();
                 updateHudText();
+                site.meowcat.managers.AudioManager.getInstance().playSFX("hit.ogg");
                 System.out.println("Correct!");
             } else {
                 applyPenalty();

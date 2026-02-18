@@ -53,6 +53,7 @@ public class SettingsState extends BaseAppState {
 
     private void saveSettings() {
         GameSettings.volume = (float) volume.getModel().getValue();
+        site.meowcat.managers.AudioManager.getInstance().setVolume(GameSettings.volume);
         GameSettings.hitWindow = (float) timing.getModel().getValue();
         GameSettings.fullscreen = fullscreen.isChecked();
     }

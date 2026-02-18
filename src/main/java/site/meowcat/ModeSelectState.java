@@ -22,14 +22,21 @@ public class ModeSelectState extends BaseAppState {
 
         // classic
         Button classic = window.addChild(new Button("Classic"));
-        classic.addClickCommands(src -> launchGame(new ClassicMode()));
+        classic.addClickCommands(src -> {
+            site.meowcat.managers.AudioManager.getInstance().playSFX("click.ogg");
+            launchGame(new ClassicMode());
+        });
 
         // memory
         Button memory = window.addChild(new Button("Memory"));
-        memory.addClickCommands(src -> launchGame(new MemoryMode()));
+        memory.addClickCommands(src -> {
+            site.meowcat.managers.AudioManager.getInstance().playSFX("click.ogg");
+            launchGame(new MemoryMode());
+        });
 
         Button back = window.addChild(new Button("Back"));
         back.addClickCommands(src -> {
+            site.meowcat.managers.AudioManager.getInstance().playSFX("click.ogg");
             if (getStateManager().getState(ModeSelectState.class) == this) {
                 getStateManager().detach(this);
             }
