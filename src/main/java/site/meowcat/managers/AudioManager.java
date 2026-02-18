@@ -32,6 +32,19 @@ public class AudioManager {
         this.volume = GameSettings.volume;
     }
 
+    private String[] musicList = {
+            "music/music.ogg",
+            "music/music_alt1.ogg",
+            "music/music_alt2.ogg"
+    };
+
+    public void playRandomBGM() {
+        java.util.Random rand = new java.util.Random();
+        String selected = musicList[rand.nextInt(musicList.length)];
+        System.out.println("Playing random BGM: " + selected);
+        playBGM(selected);
+    }
+
     public void playBGM(String name) {
         if (bgm != null) {
             bgm.stop();
