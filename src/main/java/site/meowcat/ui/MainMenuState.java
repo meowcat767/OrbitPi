@@ -10,6 +10,7 @@ import com.simsilica.lemur.style.ElementId;
 import com.simsilica.lemur.style.Styles;
 import com.simsilica.lemur.style.Attributes;
 import site.meowcat.GameState;
+import site.meowcat.ModeSelectState;
 
 
 public class MainMenuState extends BaseAppState {
@@ -68,7 +69,7 @@ public class MainMenuState extends BaseAppState {
     }
 
     private void startGame() {
-        getStateManager().attach(new GameState());
+        getStateManager().attach(new ModeSelectState());
         getStateManager().detach(this);
     }
 
