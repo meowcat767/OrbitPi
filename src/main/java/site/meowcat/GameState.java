@@ -17,6 +17,7 @@ import com.jme3.font.BitmapFont;
 import com.jme3.font.BitmapText;
 import site.meowcat.ui.MainMenuState;
 import com.jme3.audio.AudioNode;
+import com.jme3.app.SimpleApplication;
 
 public class GameState extends BaseAppState {
 
@@ -51,14 +52,14 @@ public class GameState extends BaseAppState {
                 .loadFont("Interface/Fonts/Default.fnt");
 
         scoreHud = new BitmapText(guiFont);
+        SimpleApplication simpleApp = (SimpleApplication) app;
+
+        float padding = 200;
+        float scorex = simpleApp.getCamera().getWidth() - scoreHud.getLineWidth() - padding;
+        float scorey = simpleApp.getCamera().getHeight() - 10; // 20 px down from top
+        scoreHud.setLocalTranslation(scorex, scorey, 0);
 
         scoreHud.setSize(36);
-
-        scoreHud.setLocalTranslation(
-                20,
-                app.getCamera().getHeight() - 20,
-                0
-        );
 
         app.getGuiNode().attachChild(scoreHud);
 
