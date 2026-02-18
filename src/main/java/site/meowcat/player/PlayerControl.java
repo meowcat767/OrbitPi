@@ -61,20 +61,7 @@ public class PlayerControl extends AbstractControl implements ActionListener {
             return;
         if (onHit != null) {
             onHit.accept(digit);
-        } else if (digit == piManager.currentDigit()) {
-            piManager.advance();
-            site.meowcat.ScoreManager.add(10);
-            if (gameState != null) {
-                gameState.updateScoreHud();
-            }
-            logger.info("Advance to " + piManager.currentDigit());
-        } else {
-            System.out.println("Wrong digit! Expected: " + piManager.currentDigit() + " but got: " + digit);
-            if (gameState != null) {
-                gameState.applyPenalty();
-            }
         }
-
     }
 
     @Override
@@ -87,7 +74,6 @@ public class PlayerControl extends AbstractControl implements ActionListener {
         // We consider a hit if radius is between 9 and 11 (maxRadius is 10)
         if (!bouncingOut && radius > maxRadius - 1.5f) {
             ringHit(lastRingDigit);
-            site.meowcat.ScoreManager.add(10);
         } else {
             System.out.println("Miss! radius: " + radius + " bouncingOut: " + bouncingOut);
             if (gameState != null) {

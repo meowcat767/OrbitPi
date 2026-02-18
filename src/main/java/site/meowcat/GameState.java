@@ -33,6 +33,7 @@ public class GameState extends BaseAppState {
     private GameMode mode;
     private BitmapText scoreHud;
     private BitmapFont guiFont;
+
     public void startWithMode(GameMode mode) {
         this.mode = mode;
     }
@@ -65,7 +66,6 @@ public class GameState extends BaseAppState {
 
         updateScoreHud();
 
-
     }
 
     public void updateScoreHud() {
@@ -79,8 +79,6 @@ public class GameState extends BaseAppState {
         float y = app.getCamera().getHeight() - 10;
         scoreHud.setLocalTranslation(x, y, 0);
     }
-
-
 
     private void setupLivesHud() {
         BitmapFont font = app.getAssetManager().loadFont("Interface/Fonts/Default.fnt");
@@ -138,7 +136,9 @@ public class GameState extends BaseAppState {
             }
             if (digit == pi.currentDigit()) {
                 pi.advance();
+                site.meowcat.ScoreManager.add(10);
                 updateHudText();
+                updateScoreHud();
                 site.meowcat.managers.AudioManager.getInstance().playSFX("hit.ogg");
                 System.out.println("Correct!");
             } else {
