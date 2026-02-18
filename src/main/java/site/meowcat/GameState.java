@@ -68,13 +68,18 @@ public class GameState extends BaseAppState {
 
     }
 
-    private void updateScoreHud() {
+    public void updateScoreHud() {
+        SimpleApplication app = (SimpleApplication) getApplication();
 
-        int score =
-                site.meowcat.ScoreManager.INSTANCE.getScore();
-
+        int score = site.meowcat.ScoreManager.getScore();
         scoreHud.setText("Score: " + score);
+
+        float padding = 200;
+        float x = app.getCamera().getWidth() - scoreHud.getLineWidth() - padding;
+        float y = app.getCamera().getHeight() - 10;
+        scoreHud.setLocalTranslation(x, y, 0);
     }
+
 
 
     private void setupLivesHud() {
