@@ -14,6 +14,7 @@ object ScoreManager {
         if (score < 0) score = 0
     }
 
+
     @JvmStatic
     fun reset() { score = 0 }
 
