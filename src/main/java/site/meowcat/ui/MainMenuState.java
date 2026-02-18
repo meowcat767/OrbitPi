@@ -150,5 +150,10 @@ public class MainMenuState extends BaseAppState {
     @Override
     protected void onDisable() {
         window.removeFromParent();
+        for (BitmapText digit : rain) {
+            digit.removeFromParent();
+        }
+
+        window.removeFromParent();
     }
 }
