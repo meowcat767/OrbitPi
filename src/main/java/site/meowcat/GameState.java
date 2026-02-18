@@ -30,7 +30,8 @@ public class GameState extends BaseAppState {
     private int lives = 3;
     private BitmapText livesHud;
     private GameMode mode;
-
+    private BitmapText scoreHud;
+    private BitmapFont guiFont;
     public void startWithMode(GameMode mode) {
         this.mode = mode;
     }
@@ -44,7 +45,36 @@ public class GameState extends BaseAppState {
         float y = app.getCamera().getHeight() - 20;
         digitHud.setLocalTranslation(x, y, 0);
         app.getGuiNode().attachChild(digitHud);
+        SimpleApplication app = (SimpleApplication) getApplication();
+
+        guiFont = app.getAssetManager()
+                .loadFont("Interface/Fonts/Default.fnt");
+
+        scoreHud = new BitmapText(guiFont);
+
+        scoreHud.setSize(36);
+
+        scoreHud.setLocalTranslation(
+                20,
+                app.getCamera().getHeight() - 20,
+                0
+        );
+
+        app.getGuiNode().attachChild(scoreHud);
+
+        updateScoreHud();
+
+
     }
+
+    private void updateScoreHud() {
+
+        int score =
+                site.meowcat.ScoreManager.INSTANCE.getScore();
+
+        scoreHud.setText("Score: " + score);
+    }
+
 
     private void setupLivesHud() {
         BitmapFont font = app.getAssetManager().loadFont("Interface/Fonts/Default.fnt");

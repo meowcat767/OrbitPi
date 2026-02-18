@@ -1,24 +1,21 @@
 package site.meowcat
 
-class ScoreManager {
-    private var score: Int = 0
+object ScoreManager {
 
-    fun reset() {
-        score = 0
-    }
+    @JvmStatic
+    fun getScore(): Int = score
 
-    fun add(points: Int) {
-        score += points
-    }
+    @JvmStatic
+    fun add(points: Int) { score += points }
 
+    @JvmStatic
     fun penalty(points: Int) {
         score -= points
-        if (score < 0) {
-            score = 0
-        }
+        if (score < 0) score = 0
     }
 
-    fun getScore(): Int {
-       return score
-    }
+    @JvmStatic
+    fun reset() { score = 0 }
+
+    private var score: Int = 0
 }
