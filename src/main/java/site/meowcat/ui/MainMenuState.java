@@ -1,4 +1,5 @@
 package site.meowcat.ui;
+
 import com.jme3.app.Application;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.BaseAppState;
@@ -12,7 +13,6 @@ import com.simsilica.lemur.style.Attributes;
 import site.meowcat.GameState;
 import site.meowcat.ModeSelectState;
 
-
 public class MainMenuState extends BaseAppState {
 
     private Container window;
@@ -21,10 +21,7 @@ public class MainMenuState extends BaseAppState {
     @Override
     protected void initialize(Application application) {
         this.app = (SimpleApplication) application;
-        GuiGlobals.initialize(app);
-        BaseStyles.loadGlassStyle();
-        GuiGlobals.getInstance().getStyles().setDefaultStyle("glass");
-        
+
         // Setup title style
         Styles styles = GuiGlobals.getInstance().getStyles();
         Attributes titleAttrs = styles.getSelector("title", "glass");
@@ -37,13 +34,13 @@ public class MainMenuState extends BaseAppState {
         window.addChild(new Label("OrbitPi", new ElementId("title"))); // glass doesn't allow for "π"
         Button startButton = window.addChild(new Button("Start Game!"));
         startButton.addClickCommands(source -> startGame());
-        
+
         Button settingsButton = window.addChild(new Button("Settings"));
         settingsButton.addClickCommands(source -> {
             getStateManager().attach(new SettingsState());
             getStateManager().detach(this);
         });
-        
+
         Button quitButton = window.addChild(new Button("Quit"));
         quitButton.addClickCommands(source -> app.stop());
 
@@ -51,24 +48,24 @@ public class MainMenuState extends BaseAppState {
         Attributes buttonAttrs = styles.getSelector(Button.ELEMENT_ID, "glass");
         buttonAttrs.set("margin", new Insets3f(10, 20, 10, 20));
         buttonAttrs.set("fontSize", 32f);
-        
-        centerWindow();
     }
 
     private void centerWindow() {
         // We need to wait for the preferred size to be calculated or force it
         window.setPreferredSize(window.getPreferredSize());
-        
+
         float x = app.getCamera().getWidth() / 2f;
         float y = app.getCamera().getHeight() / 2f;
         Vector3f size = window.getPreferredSize();
-        
+
         // Scale the window to be more visible on high res screens if needed
         // but let's first ensure it's centered
         window.setLocalTranslation(x - size.x / 2f, y + size.y / 2f, 0);
     }
 
     private void startGame() {
+        if (getStateManager().getState(ModeSelectState.class) != null)
+            return;
         getStateManager().attach(new ModeSelectState());
         getStateManager().detach(this);
     }
@@ -80,6 +77,7 @@ public class MainMenuState extends BaseAppState {
     @Override
     protected void onEnable() {
         app.getGuiNode().attachChild(window);
+        centerWindow();
     }
 
     @Override

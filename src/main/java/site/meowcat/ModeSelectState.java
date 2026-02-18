@@ -14,14 +14,10 @@ import site.meowcat.Interfaces.GameMode;
 
 public class ModeSelectState extends BaseAppState {
     private Container window;
+
     @Override
     protected void initialize(Application app) {
-    GuiGlobals.initialize(app);
-        BaseStyles.loadGlassStyle();
-        GuiGlobals.getInstance().getStyles().setDefaultStyle("glass");
         window = new Container();
-        ((SimpleApplication) app).getGuiNode().attachChild(window);
-        window.setLocalTranslation(300, 500, 0);
         window.addChild(new Label("Select game mode"));
 
         // classic
@@ -33,10 +29,24 @@ public class ModeSelectState extends BaseAppState {
         memory.addClickCommands(src -> launchGame(new MemoryMode()));
 
         Button back = window.addChild(new Button("Back"));
-        back.addClickCommands(src -> getStateManager().detach(this));
+        back.addClickCommands(src -> {
+            if (getStateManager().getState(ModeSelectState.class) == this) {
+                getStateManager().detach(this);
+            }
+        });
+    }
+
+    private void centerWindow() {
+        window.setPreferredSize(window.getPreferredSize());
+        float x = getApplication().getCamera().getWidth() / 2f;
+        float y = getApplication().getCamera().getHeight() / 2f;
+        com.jme3.math.Vector3f size = window.getPreferredSize();
+        window.setLocalTranslation(x - size.x / 2f, y + size.y / 2f, 0);
     }
 
     private void launchGame(GameMode mode) {
+        if (getStateManager().getState(GameState.class) != null)
+            return;
         GameState game = new GameState();
         game.startWithMode(mode);
         getStateManager().attach(game);
@@ -50,11 +60,12 @@ public class ModeSelectState extends BaseAppState {
 
     @Override
     protected void onEnable() {
-
+        ((SimpleApplication) getApplication()).getGuiNode().attachChild(window);
+        centerWindow();
     }
 
     @Override
     protected void onDisable() {
-
+        window.removeFromParent();
     }
 }

@@ -30,6 +30,10 @@ public class GameState extends BaseAppState {
     private BitmapText livesHud;
     private GameMode mode;
 
+    public void startWithMode(GameMode mode) {
+        this.mode = mode;
+    }
+
     private void setupHud() {
         BitmapFont font = app.getAssetManager().loadFont("Interface/Fonts/Default.fnt");
         digitHud = new BitmapText(font);
@@ -51,7 +55,7 @@ public class GameState extends BaseAppState {
     }
 
     public void updateLivesHud() {
-        if(livesHud != null) {
+        if (livesHud != null) {
             livesHud.setText("Lives: " + lives);
         }
     }
@@ -67,20 +71,19 @@ public class GameState extends BaseAppState {
 
     public void gameOver() {
         System.out.println("!!! EXPECTED STOP !!!");
-        getStateManager().attach(new MainMenuState());
         getStateManager().detach(this);
+        getStateManager().attach(new MainMenuState());
     }
 
     public void updateHudText() {
         digitHud.setText(
-                "Next digit: " + pi.currentDigit()
-        );
-        float x = app.getCamera().getWidth() / 2f - digitHud.getLineWidth()/ 2f;
+                "Next digit: " + pi.currentDigit());
+        float x = app.getCamera().getWidth() / 2f - digitHud.getLineWidth() / 2f;
         digitHud.setLocalTranslation(x, digitHud.getLocalTranslation().y, 0);
     }
 
     private void spawnPlayer() {
-        var sphere = new Sphere(16,16,0.5f);
+        var sphere = new Sphere(16, 16, 0.5f);
         player = new Geometry("player", sphere);
         var mat = new Material(app.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         mat.setColor("Color", ColorRGBA.White);
@@ -100,7 +103,7 @@ public class GameState extends BaseAppState {
         player.addControl(playerControl);
         playerControl.setupInput(app.getInputManager());
         gameRoot.attachChild(player);
-        app.getCamera().setLocation(new Vector3f(0,15,20));
+        app.getCamera().setLocation(new Vector3f(0, 15, 20));
         app.getCamera().lookAt(Vector3f.ZERO, Vector3f.UNIT_Y);
     }
 
@@ -136,6 +139,13 @@ public class GameState extends BaseAppState {
 
     @Override
     protected void cleanup(Application app) {
+        if (playerControl != null) {
+            playerControl.cleanupInput(app.getInputManager());
+        }
+        if (digitHud != null)
+            digitHud.removeFromParent();
+        if (livesHud != null)
+            livesHud.removeFromParent();
         gameRoot.removeFromParent();
     }
 

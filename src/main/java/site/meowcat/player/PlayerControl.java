@@ -13,7 +13,7 @@ import site.meowcat.GameState;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class PlayerControl extends AbstractControl implements ActionListener{
+public class PlayerControl extends AbstractControl implements ActionListener {
     private static final Logger logger = LogManager.getLogger(PlayerControl.class);
     private float angle = 0f;
     private float radius = 0f;
@@ -44,13 +44,21 @@ public class PlayerControl extends AbstractControl implements ActionListener{
         this.onCorrectHit = onCorrectHit;
     }
 
-    public void setupInput(InputManager input){
+    public void setupInput(InputManager input) {
         input.addMapping("enter", new KeyTrigger(KeyInput.KEY_SPACE));
         input.addListener(this, "enter");
     }
 
+    public void cleanupInput(InputManager input) {
+        if (input.hasMapping("enter")) {
+            input.deleteMapping("enter");
+        }
+        input.removeListener(this);
+    }
+
     private void ringHit(int digit) {
-        if (piManager == null) return;
+        if (piManager == null)
+            return;
         if (digit == piManager.currentDigit()) {
             if (onCorrectHit != null) {
                 onCorrectHit.run();
@@ -69,13 +77,14 @@ public class PlayerControl extends AbstractControl implements ActionListener{
 
     @Override
     public void onAction(String name, boolean pressed, float tpf) {
-        if (!pressed || !name.equals("enter")) return;
+        if (!pressed || !name.equals("enter"))
+            return;
 
         // Space pressed - check if we are currently "hitting" a ring
-        // Ring radius is 10, torus tube radius is 0.2. 
+        // Ring radius is 10, torus tube radius is 0.2.
         // We consider a hit if radius is between 9 and 11 (maxRadius is 10)
         if (!bouncingOut && radius > maxRadius - 1.5f) {
-             ringHit(lastRingDigit);
+            ringHit(lastRingDigit);
         } else {
             System.out.println("Miss! radius: " + radius + " bouncingOut: " + bouncingOut);
             if (gameState != null) {
@@ -86,7 +95,8 @@ public class PlayerControl extends AbstractControl implements ActionListener{
 
     @Override
     protected void controlUpdate(float tpf) {
-        if (spatial == null) return;
+        if (spatial == null)
+            return;
 
         // Radial "bounce"
         if (bouncingOut) {
@@ -94,12 +104,12 @@ public class PlayerControl extends AbstractControl implements ActionListener{
             if (radius >= maxRadius) {
                 radius = maxRadius;
                 bouncingOut = false;
-                
+
                 // When we hit the max radius, we should be at a ring.
                 // We want to hit EACH ring clockwise.
                 // Rings are at angles: TWO_PI * i / 10f;
                 // Clockwise means decreasing index or (10 - index) increasing.
-                
+
                 lastRingDigit = (10 - currentTargetRing) % 10;
             }
         } else {
@@ -107,20 +117,22 @@ public class PlayerControl extends AbstractControl implements ActionListener{
             if (radius <= 0) {
                 radius = 0;
                 bouncingOut = true;
-                
+
                 // Move to next ring for next bounce
                 currentTargetRing = (currentTargetRing + 1) % 10;
 
-                // Set the angle for the next bounce immediately so it's visible during the flight out
+                // Set the angle for the next bounce immediately so it's visible during the
+                // flight out
                 angle = FastMath.TWO_PI * (10 - currentTargetRing) / 10f;
-                if (angle >= FastMath.TWO_PI) angle -= FastMath.TWO_PI;
+                if (angle >= FastMath.TWO_PI)
+                    angle -= FastMath.TWO_PI;
             }
         }
 
         float x = FastMath.cos(angle) * radius;
         float z = FastMath.sin(angle) * radius;
         spatial.setLocalTranslation(x, 0, z);
-        
+
         // Update billboard labels to face camera
         // In JME, controls are updated after the spatial's translation is set.
         // But we want to update the rings' labels, not just the player.
@@ -128,5 +140,6 @@ public class PlayerControl extends AbstractControl implements ActionListener{
     }
 
     @Override
-    protected void controlRender(RenderManager rm, ViewPort vp) {}
+    protected void controlRender(RenderManager rm, ViewPort vp) {
+    }
 }
