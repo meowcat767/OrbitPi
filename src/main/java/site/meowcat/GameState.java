@@ -76,8 +76,11 @@ public class GameState extends BaseAppState {
     }
 
     public void updateHudText() {
-        digitHud.setText(
-                "Next digit: " + pi.currentDigit());
+        if (mode != null) {
+            digitHud.setText(mode.getHudText(pi.currentDigit()));
+        } else {
+            digitHud.setText("Next digit: " + pi.currentDigit());
+        }
         float x = app.getCamera().getWidth() / 2f - digitHud.getLineWidth() / 2f;
         digitHud.setLocalTranslation(x, digitHud.getLocalTranslation().y, 0);
     }
@@ -91,13 +94,16 @@ public class GameState extends BaseAppState {
         playerControl = new PlayerControl();
         playerControl.setPiManager(pi);
         playerControl.setGameState(this);
-        playerControl.setOnCorrectHit(() -> {
-            // Using the requested logic
-            int digit = playerControl.getLastRingDigit();
+        playerControl.setOnHit((digit) -> {
+            if (mode != null) {
+                mode.onDigitHit(digit);
+            }
             if (digit == pi.currentDigit()) {
                 pi.advance();
                 updateHudText();
                 System.out.println("Correct!");
+            } else {
+                applyPenalty();
             }
         });
         player.addControl(playerControl);

@@ -4,7 +4,7 @@ import site.meowcat.Interfaces.GameMode;
 
 public class ClassicMode implements GameMode {
     @Override
-    public void onCorrectDigit(int digit) {
+    public void onDigitHit(int digit) {
 
     }
 
