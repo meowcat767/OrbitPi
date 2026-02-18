@@ -186,6 +186,9 @@ public class GameState extends BaseAppState {
         if (livesHud != null)
             livesHud.removeFromParent();
         gameRoot.removeFromParent();
+        if (scoreHud != null) {
+            scoreHud.removeFromParent();
+        }
     }
 
     @Override
