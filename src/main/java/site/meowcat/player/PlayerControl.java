@@ -18,10 +18,15 @@ public class PlayerControl extends AbstractControl implements ActionListener {
     private float angle = 0f;
     private float radius = 0f;
     private float orbitSpeed = 0f; // Speed will be handled by angle increment per bounce
-    private float radialVelocity = 20f;
     private float maxRadius = 10f;
     private boolean bouncingOut = true;
     private int currentTargetRing = 0;
+    private float baseS0eed = 1.5f;
+    private float speedMultiplier = 0.02f;
+    private float angularSpeed;
+    private float baseRadialVelocity = 4f;
+    private float radialVelocity;
+    private float maxRadialVelocity = 14f;
 
     private int lastRingDigit = -1;
     private site.meowcat.managers.PiManager piManager;
