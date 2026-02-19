@@ -21,7 +21,7 @@ public class PlayerControl extends AbstractControl implements ActionListener {
     private float maxRadius = 10f;
     private boolean bouncingOut = true;
     private int currentTargetRing = 0;
-    private float baseS0eed = 1.5f;
+    private float baseSpeed = 1.5f;
     private float speedMultiplier = 0.02f;
     private float angularSpeed;
     private float baseRadialVelocity = 4f;
@@ -89,6 +89,10 @@ public class PlayerControl extends AbstractControl implements ActionListener {
 
     @Override
     protected void controlUpdate(float tpf) {
+        int score = site.meowcat.ScoreManager.getScore(); // dialing the kotlin in my area
+        radialVelocity = baseRadialVelocity + score * 1.5f;
+        radialVelocity = Math.min(radialVelocity, maxRadialVelocity);
+        radialVelocity = FastMath.clamp(radialVelocity, 0f, 1f); // anti railgun system
         if (spatial == null)
             return;
 
