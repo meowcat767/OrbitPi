@@ -34,8 +34,8 @@ public class AudioManager {
 
     private String[] musicList = {
             "music/music.ogg",
-            "music/music_alt1.ogg",
-            "music/music_alt2.ogg"
+            "music/kyu.ogg",
+            "music/eshop1.ogg"
     };
 
     public void playRandomBGM() {
