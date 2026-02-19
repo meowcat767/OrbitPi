@@ -11,6 +11,7 @@ import com.simsilica.lemur.style.BaseStyles;
 import site.meowcat.GameModes.ClassicMode;
 import site.meowcat.GameModes.MemoryMode;
 import site.meowcat.Interfaces.GameMode;
+import site.meowcat.ui.MainMenuState;
 
 public class ModeSelectState extends BaseAppState {
     private Container window;
@@ -38,6 +39,7 @@ public class ModeSelectState extends BaseAppState {
         back.addClickCommands(src -> {
             site.meowcat.managers.AudioManager.getInstance().playSFX("click.ogg");
             if (getStateManager().getState(ModeSelectState.class) == this) {
+                getStateManager().attach(new MainMenuState());
                 getStateManager().detach(this);
             }
         });
