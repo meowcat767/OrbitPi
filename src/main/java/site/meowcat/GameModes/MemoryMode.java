@@ -13,7 +13,7 @@ public class MemoryMode implements GameMode {
     @Override
     public String getHudText(int nextDigit) {
         if (lastDigit == -1) {
-            return "Enter " + nextDigit;
+            return "Start with " + nextDigit;
         }
         return "Last digit: " + lastDigit;
     }

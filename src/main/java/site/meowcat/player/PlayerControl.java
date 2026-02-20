@@ -90,7 +90,7 @@ public class PlayerControl extends AbstractControl implements ActionListener {
     @Override
     protected void controlUpdate(float tpf) {
         int score = site.meowcat.ScoreManager.getScore(); // dialing the kotlin in my area
-        radialVelocity = baseRadialVelocity + score * 1.5f;
+        radialVelocity = baseRadialVelocity + score * 1;
         radialVelocity = Math.min(radialVelocity, maxRadialVelocity);
 
         if (spatial == null)

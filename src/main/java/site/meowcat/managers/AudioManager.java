@@ -34,7 +34,6 @@ public class AudioManager {
 
     private String[] musicList = {
             "music/music.ogg",
-            "music/kyu.ogg",
             "music/eshop1.ogg"
     };
 
