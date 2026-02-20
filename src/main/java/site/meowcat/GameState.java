@@ -47,17 +47,15 @@ public class GameState extends BaseAppState {
         float y = app.getCamera().getHeight() - 20;
         digitHud.setLocalTranslation(x, y, 0);
         app.getGuiNode().attachChild(digitHud);
-        SimpleApplication app = (SimpleApplication) getApplication();
 
         guiFont = app.getAssetManager()
                 .loadFont("Interface/Fonts/Default.fnt");
 
         scoreHud = new BitmapText(guiFont);
-        SimpleApplication simpleApp = (SimpleApplication) app;
 
         float padding = 200;
-        float scorex = simpleApp.getCamera().getWidth() - scoreHud.getLineWidth() - padding;
-        float scorey = simpleApp.getCamera().getHeight() - 10; // 20 px down from top
+        float scorex = app.getCamera().getWidth() - scoreHud.getLineWidth() - padding;
+        float scorey = app.getCamera().getHeight() - 10; // 20 px down from top
         scoreHud.setLocalTranslation(scorex, scorey, 0);
 
         scoreHud.setSize(36);

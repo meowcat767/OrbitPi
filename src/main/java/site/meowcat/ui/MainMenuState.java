@@ -23,8 +23,8 @@ public class MainMenuState extends BaseAppState {
 
     private Container window;
     private SimpleApplication app;
-    private static final String PI_DIGITS =
-            "14159265358979323846264338327950288419716939937510π"; // append π here so it can be picked
+    private static final String PI_DIGITS = "14159265358979323846264338327950288419716939937510π"; // append π here so
+                                                                                                   // it can be picked
 
     private List<BitmapText> rain = new ArrayList<>();
     private List<Float> speeds = new ArrayList<>();
@@ -49,13 +49,6 @@ public class MainMenuState extends BaseAppState {
         startButton.addClickCommands(source -> {
             site.meowcat.managers.AudioManager.getInstance().playSFX("click.ogg");
             startGame();
-        });
-
-        Button settingsButton = window.addChild(new Button("Settings"));
-        settingsButton.addClickCommands(source -> {
-            site.meowcat.managers.AudioManager.getInstance().playSFX("click.ogg");
-            getStateManager().attach(new SettingsState());
-            getStateManager().detach(this);
         });
 
         Button quitButton = window.addChild(new Button("Quit"));
@@ -94,7 +87,6 @@ public class MainMenuState extends BaseAppState {
         int index = random.nextInt(PI_DIGITS.length());
         return String.valueOf(PI_DIGITS.charAt(index));
     }
-
 
     private void centerWindow() {
         // We need to wait for the preferred size to be calculated or force it
@@ -137,7 +129,6 @@ public class MainMenuState extends BaseAppState {
         }
     }
 
-
     @Override
     protected void onEnable() {
         for (BitmapText digit : rain) {
@@ -153,7 +144,5 @@ public class MainMenuState extends BaseAppState {
         for (BitmapText digit : rain) {
             digit.removeFromParent();
         }
-
-        window.removeFromParent();
     }
 }
