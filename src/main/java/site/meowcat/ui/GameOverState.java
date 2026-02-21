@@ -9,15 +9,21 @@ import com.jme3.input.controls.ActionListener;
 import com.jme3.math.Vector3f;
 import com.simsilica.lemur.*;
 import com.simsilica.lemur.style.ElementId;
+import site.meowcat.managers.LeaderboardManager;
 import site.meowcat.managers.ScoreManager;
 
 public class GameOverState extends BaseAppState {
 
     private Container window;
     private SimpleApplication app;
+    private TextField nameField;
 
     private final ActionListener listener = (name, isPressed, tpf) -> {
         if (name.equals("Restart") && !isPressed) {
+            if (nameField != null
+                    && com.simsilica.lemur.GuiGlobals.getInstance().getFocusManagerState().getFocus() == nameField) {
+                return;
+            }
             returnToMenu();
         }
     };
@@ -29,9 +35,23 @@ public class GameOverState extends BaseAppState {
         window = new Container();
         window.addChild(new Label("GAME OVER", new ElementId("title")));
 
-        Label scoreLabel = window.addChild(new Label("Score: " + ScoreManager.getScore()));
+        int score = ScoreManager.getScore();
+        Label scoreLabel = window.addChild(new Label("Score: " + score));
         scoreLabel.setFontSize(24f);
         scoreLabel.setInsets(new Insets3f(10, 0, 10, 0));
+
+        if (LeaderboardManager.getInstance().qualifies(score)) {
+            window.addChild(new Label("New High Score!"));
+            nameField = window.addChild(new TextField("Player"));
+            nameField.setInsets(new Insets3f(10, 0, 10, 0));
+
+            Button saveButton = window.addChild(new Button("Save Score"));
+            saveButton.addClickCommands(source -> {
+                site.meowcat.managers.AudioManager.getInstance().playSFX("click.ogg");
+                LeaderboardManager.getInstance().addEntry(nameField.getText(), score);
+                returnToMenu();
+            });
+        }
 
         Button menuButton = window.addChild(new Button("Main Menu"));
         menuButton.addClickCommands(source -> {

@@ -23,7 +23,10 @@ public class MainMenuState extends BaseAppState {
 
     private Container window;
     private SimpleApplication app;
-    private static final String PI_DIGITS = "14159265358979323846264338327950288419716939937510π"; // append π here so - upd: cannot be picked because font
+    private static final String PI_DIGITS = "14159265358979323846264338327950288419716939937510π"; // append π here so -
+                                                                                                   // upd: cannot be
+                                                                                                   // picked because
+                                                                                                   // font
                                                                                                    // it can be picked
 
     private List<BitmapText> rain = new ArrayList<>();
@@ -49,6 +52,13 @@ public class MainMenuState extends BaseAppState {
         startButton.addClickCommands(source -> {
             site.meowcat.managers.AudioManager.getInstance().playSFX("click.ogg");
             startGame();
+        });
+
+        Button leaderboardButton = window.addChild(new Button("Leaderboards"));
+        leaderboardButton.addClickCommands(source -> {
+            site.meowcat.managers.AudioManager.getInstance().playSFX("click.ogg");
+            getStateManager().attach(new site.meowcat.ui.LeaderboardState());
+            getStateManager().detach(this);
         });
 
         Button quitButton = window.addChild(new Button("Quit"));
