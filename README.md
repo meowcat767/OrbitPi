@@ -6,3 +6,8 @@ Originally written for the UTC Portsmouth "Pi Game Coding Competition".
 
 OrbitPi uses jMonkeyEngine3 for all game/rendering code, and uses Kotlin for data storage.
 Managers run the game's services (AudioManager runs the audio service, GameSettings runs the settings service, etc).
+Interfaces are basic Java Interfaces.
+Ui stores most menu states. 
+Effects stores engine effects.
+
+
