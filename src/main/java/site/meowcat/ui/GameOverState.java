@@ -3,57 +3,73 @@ package site.meowcat.ui;
 import com.jme3.app.Application;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.BaseAppState;
-import com.jme3.font.BitmapText;
 import com.jme3.input.KeyInput;
 import com.jme3.input.controls.KeyTrigger;
 import com.jme3.input.controls.ActionListener;
+import com.jme3.math.Vector3f;
+import com.simsilica.lemur.*;
+import com.simsilica.lemur.style.ElementId;
 import site.meowcat.managers.ScoreManager;
 
 public class GameOverState extends BaseAppState {
 
-    private BitmapText gameOverText;
-    private SimpleApplication simpleApp;
+    private Container window;
+    private SimpleApplication app;
 
     private final ActionListener listener = (name, isPressed, tpf) -> {
         if (name.equals("Restart") && !isPressed) {
-            getStateManager().detach(this);
-            getStateManager().attach(new MainMenuState());
+            returnToMenu();
         }
     };
 
     @Override
-    protected void initialize(Application app) {
+    protected void initialize(Application application) {
+        this.app = (SimpleApplication) application;
 
-        simpleApp = (SimpleApplication) app;
+        window = new Container();
+        window.addChild(new Label("GAME OVER", new ElementId("title")));
 
-        gameOverText = new BitmapText(
-                simpleApp.getAssetManager().loadFont("Interface/Fonts/Default.fnt")
-        );
+        Label scoreLabel = window.addChild(new Label("Score: " + ScoreManager.getScore()));
+        scoreLabel.setFontSize(24f);
+        scoreLabel.setInsets(new Insets3f(10, 0, 10, 0));
 
-        gameOverText.setText(
-                "GAME OVER\n\nScore: " + ScoreManager.getScore() +
-                        "\n\nPress ENTER to return to menu"
-        );
+        Button menuButton = window.addChild(new Button("Main Menu"));
+        menuButton.addClickCommands(source -> {
+            site.meowcat.managers.AudioManager.getInstance().playSFX("click.ogg");
+            returnToMenu();
+        });
 
-        float x = simpleApp.getCamera().getWidth() / 2f - gameOverText.getLineWidth() / 2f;
-        float y = simpleApp.getCamera().getHeight() / 2f + gameOverText.getLineHeight();
+        app.getInputManager().addMapping("Restart", new KeyTrigger(KeyInput.KEY_RETURN));
+        app.getInputManager().addListener(listener, "Restart");
+    }
 
-        gameOverText.setLocalTranslation(x, y, 0);
-        simpleApp.getGuiNode().attachChild(gameOverText);
+    private void centerWindow() {
+        window.setPreferredSize(window.getPreferredSize());
+        float x = app.getCamera().getWidth() / 2f;
+        float y = app.getCamera().getHeight() / 2f;
+        Vector3f size = window.getPreferredSize();
+        window.setLocalTranslation(x - size.x / 2f, y + size.y / 2f, 0);
+    }
 
-        simpleApp.getInputManager().addMapping("Restart",
-                new KeyTrigger(KeyInput.KEY_RETURN));
-
-        simpleApp.getInputManager().addListener(listener, "Restart");
+    private void returnToMenu() {
+        getStateManager().detach(this);
+        getStateManager().attach(new MainMenuState());
     }
 
     @Override
-    protected void cleanup(Application app) {
-        simpleApp.getGuiNode().detachChild(gameOverText);
-        simpleApp.getInputManager().deleteMapping("Restart");
-        simpleApp.getInputManager().removeListener(listener);
+    protected void cleanup(Application application) {
+        app.getInputManager().deleteMapping("Restart");
+        app.getInputManager().removeListener(listener);
     }
 
-    @Override protected void onEnable() {}
-    @Override protected void onDisable() {}
+    @Override
+    protected void onEnable() {
+        app.getGuiNode().attachChild(window);
+        centerWindow();
+    }
+
+    @Override
+    protected void onDisable() {
+        window.removeFromParent();
+    }
 }
