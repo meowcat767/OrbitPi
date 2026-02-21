@@ -7,7 +7,7 @@ import com.jme3.math.ColorRGBA;
 public class DigitRain {
 
     private static final String PI_DIGITS =
-            "14159265358979323846264338327950288419716939937510";
+            "1234567890";
 
     private final BitmapText text;
     private final float speed;
