@@ -1,4 +1,4 @@
-package site.meowcat
+package site.meowcat.managers
 
 object ScoreManager {
 

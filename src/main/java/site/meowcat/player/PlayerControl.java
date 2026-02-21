@@ -5,13 +5,12 @@ import com.jme3.input.KeyInput;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.KeyTrigger;
 import com.jme3.math.FastMath;
-import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.control.AbstractControl;
-import site.meowcat.GameState;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import site.meowcat.managers.ScoreManager;
 
 public class PlayerControl extends AbstractControl implements ActionListener {
     private static final Logger logger = LogManager.getLogger(PlayerControl.class);
@@ -89,7 +88,7 @@ public class PlayerControl extends AbstractControl implements ActionListener {
 
     @Override
     protected void controlUpdate(float tpf) {
-        int score = site.meowcat.ScoreManager.getScore(); // dialing the kotlin in my area
+        int score = ScoreManager.getScore(); // dialing the kotlin in my area
         radialVelocity = baseRadialVelocity + score * 1;
         radialVelocity = Math.min(radialVelocity, maxRadialVelocity);
 

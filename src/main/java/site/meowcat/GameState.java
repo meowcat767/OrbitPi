@@ -12,12 +12,11 @@ import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Sphere;
 import site.meowcat.Interfaces.GameMode;
 import site.meowcat.managers.PiManager;
+import site.meowcat.managers.ScoreManager;
 import site.meowcat.player.PlayerControl;
 import com.jme3.font.BitmapFont;
 import com.jme3.font.BitmapText;
 import site.meowcat.ui.MainMenuState;
-import com.jme3.audio.AudioNode;
-import com.jme3.app.SimpleApplication;
 
 public class GameState extends BaseAppState {
 
@@ -69,7 +68,7 @@ public class GameState extends BaseAppState {
     public void updateScoreHud() {
         SimpleApplication app = (SimpleApplication) getApplication();
 
-        int score = site.meowcat.ScoreManager.getScore();
+        int score = ScoreManager.getScore();
         scoreHud.setText("Score: " + score);
 
         float padding = 200;
@@ -134,7 +133,7 @@ public class GameState extends BaseAppState {
             }
             if (digit == pi.currentDigit()) {
                 pi.advance();
-                site.meowcat.ScoreManager.add(10);
+                ScoreManager.add(10);
                 updateHudText();
                 updateScoreHud();
                 site.meowcat.managers.AudioManager.getInstance().playSFX("hit.ogg");
