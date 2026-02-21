@@ -49,6 +49,7 @@ dependencies {
 
     implementation 'org.jmonkeyengine:jme3-effects:' + jmonkeyengineVersion
     implementation 'org.jmonkeyengine:jme3-jbullet:' + jmonkeyengineVersion
+    implementation 'org.jmonkeyengine:jme3-awt-dialogs:' + jmonkeyengineVersion
     runtimeOnly 'org.jmonkeyengine:jme3-lwjgl3:' + jmonkeyengineVersion
 
     implementation 'com.simsilica:lemur:1.16.0'
@@ -91,8 +92,7 @@ task downloadAndUnzipWindowsJre(dependsOn: downloadWindowsJre, type: Copy) {
     }
 }
 
-task buildWindowsDistribution(dependsOn: [distZip, downloadAndUnzipWindowsJre], type: Copy)
-{
+task buildWindowsDistribution(dependsOn: [distZip, downloadAndUnzipWindowsJre], type: Copy) {
     group 'distribution'
     from files("${projectDir}/scripts/desktopDeployment/OrbitPi.bat"), zipTree(distZip.archiveFile), "${buildDir}/jres/windowsJre"
     into new File(buildDir, 'distributions/OrbitPi-windows')
@@ -123,8 +123,7 @@ task downloadAndUnzipLinuxJre(dependsOn: downloadLinuxJre, type: Copy) {
     }
 }
 
-task buildLinuxDistribution(dependsOn: [distZip, downloadAndUnzipLinuxJre], type: Copy)
-{
+task buildLinuxDistribution(dependsOn: [distZip, downloadAndUnzipLinuxJre], type: Copy) {
     group 'distribution'
     from files("${projectDir}/scripts/desktopDeployment/OrbitPi.sh"){
         fileMode 0755
@@ -167,8 +166,7 @@ task downloadAndUnzipMacJre(dependsOn: downloadMacJre, type: Copy) {
     }
 }
 
-task buildMacDistribution(dependsOn: [distZip, downloadAndUnzipMacJre], type: Copy)
-{
+task buildMacDistribution(dependsOn: [distZip, downloadAndUnzipMacJre], type: Copy) {
     group 'distribution'
     from files("${projectDir}/scripts/desktopDeployment/OrbitPi.command"){
         fileMode 0755

@@ -61,7 +61,7 @@ public class ModeSelectState extends BaseAppState {
         });
 
         int rainCount = 150;
-        BitmapFont font = new BitmapFont();
+        font = app.getAssetManager().loadFont("Interface/Fonts/Default.fnt");
         for (int i = 0; i < rainCount; i++) {
             BitmapText digit = new BitmapText(font);
             digit.setText(randomDigit());

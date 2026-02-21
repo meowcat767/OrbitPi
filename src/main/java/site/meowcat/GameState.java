@@ -16,6 +16,7 @@ import site.meowcat.managers.ScoreManager;
 import site.meowcat.player.PlayerControl;
 import com.jme3.font.BitmapFont;
 import com.jme3.font.BitmapText;
+import site.meowcat.ui.GameOverState;
 import site.meowcat.ui.MainMenuState;
 
 public class GameState extends BaseAppState {
@@ -103,10 +104,9 @@ public class GameState extends BaseAppState {
     }
 
     public void gameOver() {
-        gameOver(); // my condolences
         System.out.println("!!! EXPECTED STOP !!!");
+        getStateManager().attach(new GameOverState());
         getStateManager().detach(this);
-        getStateManager().attach(new MainMenuState());
     }
 
     public void updateHudText() {
