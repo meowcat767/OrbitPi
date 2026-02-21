@@ -20,7 +20,7 @@ public class OrbitPi extends SimpleApplication {
     public static void main(String[] args) {
         OrbitPi app = new OrbitPi();
         AppSettings settings = new AppSettings(true);
-        settings.setTitle("Orbit \u03C0");
+        settings.setTitle("Orbitπ");
         settings.setFullscreen(false);
         settings.setResolution(1280, 720);
 
