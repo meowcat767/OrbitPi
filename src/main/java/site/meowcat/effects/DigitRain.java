@@ -17,7 +17,7 @@ public class DigitRain {
         text.setText(randomDigit());
         text.setLocalTranslation(x, y, 0);
 
-        text.setColor(new ColorRGBA(0f, 1f, 0f, 1f)); // Matrix green 🌱
+        text.setColor(new ColorRGBA(0f, 1f, 0f, 1f)); // Matrix green
 
         speed = 50f + (float)Math.random() * 100f;
     }

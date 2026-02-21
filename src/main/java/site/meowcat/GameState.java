@@ -103,6 +103,7 @@ public class GameState extends BaseAppState {
     }
 
     public void gameOver() {
+        gameOver(); // my condolences
         System.out.println("!!! EXPECTED STOP !!!");
         getStateManager().detach(this);
         getStateManager().attach(new MainMenuState());
