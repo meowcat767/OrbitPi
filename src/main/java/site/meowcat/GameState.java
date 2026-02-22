@@ -99,6 +99,7 @@ public class GameState extends BaseAppState {
         site.meowcat.managers.AudioManager.getInstance().playSFX("miss.ogg");
         System.out.println("OOF!  " + lives);
         if (lives <= 0) {
+            ScoreManager.reset();
             gameOver();
         }
     }
