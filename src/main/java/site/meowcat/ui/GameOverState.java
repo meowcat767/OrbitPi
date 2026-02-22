@@ -72,6 +72,7 @@ public class GameOverState extends BaseAppState {
     }
 
     private void returnToMenu() {
+        ScoreManager.reset();
         getStateManager().detach(this);
         getStateManager().attach(new MainMenuState());
     }
