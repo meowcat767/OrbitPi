@@ -139,6 +139,10 @@ public class GameState extends BaseAppState {
                 updateScoreHud();
                 site.meowcat.managers.AudioManager.getInstance().playSFX("hit.ogg");
                 System.out.println("Correct!");
+
+                if (pi.getIndex() >= 100) {
+                    win();
+                }
             } else {
                 applyPenalty();
             }
@@ -148,6 +152,12 @@ public class GameState extends BaseAppState {
         gameRoot.attachChild(player);
         app.getCamera().setLocation(new Vector3f(0, 15, 20));
         app.getCamera().lookAt(Vector3f.ZERO, Vector3f.UNIT_Y);
+    }
+
+    public void win() {
+        System.out.println("!!! VICTORY !!!");
+        getStateManager().attach(new site.meowcat.ui.WinState());
+        getStateManager().detach(this);
     }
 
     @Override
