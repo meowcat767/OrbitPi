@@ -57,6 +57,13 @@ public class MainMenuState extends BaseAppState {
             getStateManager().detach(this);
         });
 
+        Button aboutButton = window.addChild(new Button("About"));
+        aboutButton.addClickCommands(source -> {
+            site.meowcat.managers.AudioManager.getInstance().playSFX("click.ogg");
+           getStateManager().attach(new AboutAppState());
+           getStateManager().detach(this);
+        });
+
         Button quitButton = window.addChild(new Button("Quit"));
         quitButton.addClickCommands(source -> {
             site.meowcat.managers.AudioManager.getInstance().playSFX("click.ogg");
