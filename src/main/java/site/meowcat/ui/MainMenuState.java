@@ -23,11 +23,7 @@ public class MainMenuState extends BaseAppState {
 
     private Container window;
     private SimpleApplication app;
-    private static final String PI_DIGITS = "14159265358979323846264338327950288419716939937510π"; // append π here so -
-                                                                                                   // upd: cannot be
-                                                                                                   // picked because
-                                                                                                   // font
-                                                                                                   // it can be picked
+    private static final String PI_DIGITS = "14159265358979323846264338327950288419716939937510javapikotlin";
 
     private List<BitmapText> rain = new ArrayList<>();
     private List<Float> speeds = new ArrayList<>();
