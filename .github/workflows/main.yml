@@ -1,0 +1,73 @@
+name: Build and Release JMonkeyEngine Game
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'  # triggers on tags like v1.0.0
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Java
+      uses: actions/setup-java@v3
+      with:
+        distribution: temurin
+        java-version: 17
+
+    - name: Grant execute permission for Gradle (Linux)
+      if: runner.os == 'Linux'
+      run: chmod +x gradlew
+
+    - name: Build with Gradle (Linux)
+      if: runner.os == 'Linux'
+      run: ./gradlew clean build
+
+    - name: Build with Gradle (Windows)
+      if: runner.os == 'Windows'
+      run: gradlew.bat clean build
+
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: jme-game-${{ runner.os }}
+        path: build/libs/*.jar
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Download artifacts from build
+      uses: actions/download-artifact@v4
+      with:
+        name: jme-game-ubuntu-latest
+        path: release/
+    - uses: actions/download-artifact@v4
+      with:
+        name: jme-game-windows-latest
+        path: release/
+
+    - name: Create GitHub Release
+      id: create_release
+      uses: actions/create-release@v1
+      with:
+        tag_name: ${{ github.ref_name }}
+        release_name: Release ${{ github.ref_name }}
+        draft: false
+        prerelease: false
+        generate_release_notes: true
+        body: "Automated release of JMonkeyEngine game"
+
+    - name: Upload release assets
+      uses: softprops/action-gh-release@v1
+      with:
+        files: release/**/*.jar
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
