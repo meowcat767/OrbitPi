@@ -1,9 +1,12 @@
-name: Build and Release JMonkeyEngine Game on Commit
+name: Build and Release JMonkeyEngine Game
 
 on:
   push:
     branches:
-      - main
+      - main        # triggers on commits to main
+    tags:
+      - 'v*.*.*'    # triggers on version tags like v1.0.0
+  workflow_dispatch: # allows manual triggering from the GitHub UI
 
 jobs:
   build:
@@ -13,50 +16,50 @@ jobs:
         os: [ubuntu-latest, windows-latest]
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Set up Java
-      uses: actions/setup-java@v3
-      with:
-        distribution: temurin
-        java-version: 17
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 17
 
-    - name: Make Gradle executable (Linux)
-      if: runner.os == 'Linux'
-      run: chmod +x gradlew
+      - name: Make Gradle executable (Linux)
+        if: runner.os == 'Linux'
+        run: chmod +x gradlew
 
-    - name: Build with Gradle
-      run: ${{ runner.os == 'Windows' && 'gradlew.bat clean build' || './gradlew clean build' }}
+      - name: Build with Gradle
+        run: ${{ runner.os == 'Windows' && 'gradlew.bat clean build' || './gradlew clean build' }}
 
-    - name: Upload build artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: jme-game-${{ runner.os }}
-        path: build/libs/*.jar
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: jme-game-${{ runner.os }}
+          path: build/libs/*.jar
 
   release:
     needs: build
     runs-on: ubuntu-latest
     steps:
-    - name: Download Linux artifacts
-      uses: actions/download-artifact@v4
-      with:
-        name: jme-game-ubuntu-latest
-        path: release/
-    - name: Download Windows artifacts
-      uses: actions/download-artifact@v4
-      with:
-        name: jme-game-windows-latest
-        path: release/
+      - name: Download Linux artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: jme-game-ubuntu-latest
+          path: release/
+      - name: Download Windows artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: jme-game-windows-latest
+          path: release/
 
-    - name: Create or update “latest” release
-      uses: ncipollo/release-action@v1
-      with:
-        tag: latest
-        name: Latest Build
-        body: Automated build from commit ${{ github.sha }}
-        files: release/**/*.jar
-        draft: false
-        prerelease: false
-        overwrite: true
+      - name: Create or update “latest” release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: latest
+          name: Latest Build
+          body: Automated build from commit ${{ github.sha }}
+          files: release/**/*.jar
+          draft: false
+          prerelease: false
+          overwrite: true
