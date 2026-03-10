@@ -3,10 +3,8 @@ name: Build and Release JMonkeyEngine Game
 on:
   push:
     branches:
-      - main        # triggers on commits to main
-    tags:
-      - 'v*.*.*'    # triggers on version tags like v1.0.0
-  workflow_dispatch: # allows manual triggering from the GitHub UI
+      - main
+  workflow_dispatch: # allows manual triggering
 
 jobs:
   build:
@@ -16,32 +14,56 @@ jobs:
         os: [ubuntu-latest, windows-latest]
 
     steps:
+      # 1. Checkout the repo
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # 2. Set up Java
       - name: Set up Java
         uses: actions/setup-java@v3
         with:
           distribution: temurin
           java-version: 17
 
+      # 3. Make Gradle executable on Linux
       - name: Make Gradle executable (Linux)
         if: runner.os == 'Linux'
         run: chmod +x gradlew
 
-      - name: Build with Gradle
-        run: ${{ runner.os == 'Windows' && 'gradlew.bat clean build' || './gradlew clean build' }}
+      # 4. Cache Gradle dependencies
+      - name: Cache Gradle
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper/
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
 
+      # 5. Build the project
+      - name: Build with Gradle
+        run: ${{ runner.os == 'Windows' && 'gradlew.bat clean build --console=plain --info --no-daemon' || './gradlew clean build --console=plain --info --no-daemon' }}
+
+      # 6. Prepare release folder and copy launchers
+      - name: Prepare release folder
+        run: |
+          mkdir -p release
+          cp scripts/desktopDeployment/OrbitPi.sh release/ || echo "No Linux script"
+          cp scripts/desktopDeployment/OrbitPi.command release/ || echo "No macOS script"
+          cp scripts/desktopDeployment/OrbitPi.bat release/ || echo "No Windows script"
+          cp build/libs/*.jar release/ || echo "No JAR built"
+
+      # 7. Upload artifacts (for cross-job use)
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: jme-game-${{ runner.os }}
-          path: build/libs/*.jar
+          path: release/
 
   release:
     needs: build
     runs-on: ubuntu-latest
     steps:
+      # 1. Download artifacts from both OS builds
       - name: Download Linux artifacts
         uses: actions/download-artifact@v4
         with:
@@ -53,13 +75,14 @@ jobs:
           name: jme-game-windows-latest
           path: release/
 
-      - name: Create or update “latest” release
+      # 2. Create or update the "latest" release
+      - name: Create or update latest release
         uses: ncipollo/release-action@v1
         with:
           tag: latest
           name: Latest Build
           body: Automated build from commit ${{ github.sha }}
-          files: release/**/*.jar
+          files: release/**/* # uploads all scripts + JARs
           draft: false
           prerelease: false
           overwrite: true
