@@ -1,88 +1,75 @@
-name: Build and Release JMonkeyEngine Game
+name: Build and Release JME Game
 
 on:
   push:
     branches:
       - main
-  workflow_dispatch: # allows manual triggering
+  workflow_dispatch:  # allows manual triggering
 
 jobs:
   build:
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
 
     steps:
-      # 1. Checkout the repo
+      # Checkout code
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
-      # 2. Set up Java
-      - name: Set up Java
+      # Setup Java 17 (compatible with JME)
+      - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
           distribution: temurin
           java-version: 17
 
-      # 3. Make Gradle executable on Linux
-      - name: Make Gradle executable (Linux)
-        if: runner.os == 'Linux'
-        run: chmod +x gradlew
-
-      # 4. Cache Gradle dependencies
-      - name: Cache Gradle
+      # Cache Gradle + JitPack dependencies
+      - name: Cache Gradle dependencies
         uses: actions/cache@v3
         with:
           path: |
             ~/.gradle/caches
-            ~/.gradle/wrapper/
+            ~/.gradle/wrapper
+            ~/.gradle/caches/jitpack
           key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
 
-      # 5. Build the project
-      - name: Build with Gradle
-        run: ${{ runner.os == 'Windows' && 'gradlew.bat clean build --console=plain --info --no-daemon' || './gradlew clean build --console=plain --info --no-daemon' }}
+      # Pre-fetch dependencies (avoids long stalls)
+      - name: Pre-fetch Gradle dependencies
+        run: ./gradlew --refresh-dependencies --console=plain --info
 
-      # 6. Prepare release folder and copy launchers
-      - name: Prepare release folder
+      # Build the game
+      - name: Build game
+        run: ./gradlew clean build --console=plain --info
+
+      # Zip the build output
+      - name: Package build
         run: |
           mkdir -p release
-          cp scripts/desktopDeployment/OrbitPi.sh release/ || echo "No Linux script"
-          cp scripts/desktopDeployment/OrbitPi.command release/ || echo "No macOS script"
-          cp scripts/desktopDeployment/OrbitPi.bat release/ || echo "No Windows script"
-          cp build/libs/*.jar release/ || echo "No JAR built"
+          if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
+            powershell Compress-Archive -Path build/libs/* -DestinationPath release/game-windows.zip
+          else
+            zip -r release/game-linux.zip build/libs/*
+          fi
 
-      # 7. Upload artifacts (for cross-job use)
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
+      # Create GitHub release with artifacts (on push to main)
+      - name: Create Release
+        if: github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v1
         with:
-          name: jme-game-${{ runner.os }}
-          path: release/
+          tag_name: v${{ github.run_number }}
+          name: JME Game v${{ github.run_number }}
+          body: "Automated release of JMonkeyEngine game build"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  release:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      # 1. Download artifacts from both OS builds
-      - name: Download Linux artifacts
-        uses: actions/download-artifact@v4
+      # Upload artifacts to release
+      - name: Upload Release Assets
+        if: github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v1
         with:
-          name: jme-game-ubuntu-latest
-          path: release/
-      - name: Download Windows artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: jme-game-windows-latest
-          path: release/
-
-      # 2. Create or update the "latest" release
-      - name: Create or update latest release
-        uses: ncipollo/release-action@v1
-        with:
-          tag: latest
-          name: Latest Build
-          body: Automated build from commit ${{ github.sha }}
-          files: release/**/* # uploads all scripts + JARs
-          draft: false
-          prerelease: false
-          overwrite: true
+          files: release/*.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
