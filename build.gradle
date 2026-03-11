@@ -4,21 +4,26 @@ plugins {
     id "de.undercouch.download" version "5.1.0"
     id 'idea'
     id "io.github.0ffz.github-packages" version "1.2.1"
-    id 'org.jetbrains.kotlin.jvm' // Plugin for anonymous inclusion of artifacts hosted in github package registry
+    id 'org.jetbrains.kotlin.jvm'
 }
 
 description = 'OrbitPi application'
 
-java {
-}
-
 ext.jmonkeyengineVersion = '3.8.1-stable'
+def mainClassName = 'site.meowcat.OrbitPi'
 
-mainClassName = 'site.meowcat.OrbitPi'
-if (!hasProperty('mainClass')) {
-    ext.mainClass = mainClassName
+application {
+    mainClass = mainClassName
+    if (System.getProperty("os.name").toLowerCase().contains("mac")) {
+        applicationDefaultJvmArgs = ['-XstartOnFirstThread']
+    }
 }
-jar.manifest.attributes('Main-Class': mainClassName)
+
+jar {
+    manifest {
+        attributes 'Main-Class': mainClassName
+    }
+}
 
 repositories {
     maven { url "https://jitpack.io" }
@@ -26,58 +31,56 @@ repositories {
     mavenLocal()
 }
 
-application {
-    if (System.getProperty("os.name").toLowerCase().contains("mac")) {
-        applicationDefaultJvmArgs = ['-XstartOnFirstThread'] // this is when using a Mac as a development machine which requires the AppKit main UI thread to be used for GUI applications
-    }
-}
-
 dependencies {
-    // You can read more about how to add dependencies here:
-    //   https://docs.gradle.org/current/userguide/dependency_management.html#sec:how_to_declare_your_dependencies
 
-    implementation 'org.jmonkeyengine:jme3-core:' + jmonkeyengineVersion
-    implementation 'org.jmonkeyengine:jme3-desktop:' + jmonkeyengineVersion
-    runtimeOnly 'org.jmonkeyengine:jme3-jogg:' + jmonkeyengineVersion
-    runtimeOnly 'org.jmonkeyengine:jme3-plugins:' + jmonkeyengineVersion
+    implementation "org.jmonkeyengine:jme3-core:$jmonkeyengineVersion"
+    implementation "org.jmonkeyengine:jme3-desktop:$jmonkeyengineVersion"
+    implementation "org.jmonkeyengine:jme3-effects:$jmonkeyengineVersion"
+    implementation "org.jmonkeyengine:jme3-jbullet:$jmonkeyengineVersion"
+    implementation "org.jmonkeyengine:jme3-awt-dialogs:$jmonkeyengineVersion"
 
-    implementation 'org.codehaus.groovy:groovy:3.0.21'
-    implementation 'org.codehaus.groovy:groovy:3.0.21'
-    implementation 'org.codehaus.groovy:groovy-jsr223:3.0.21'
+    runtimeOnly "org.jmonkeyengine:jme3-lwjgl3:$jmonkeyengineVersion"
+    runtimeOnly "org.jmonkeyengine:jme3-jogg:$jmonkeyengineVersion"
+    runtimeOnly "org.jmonkeyengine:jme3-plugins:$jmonkeyengineVersion"
 
+    implementation "com.simsilica:lemur:1.16.0"
+    implementation "com.simsilica:lemur-proto:1.13.0"
+    implementation "com.github.stephengold:Minie:7.7.0"
 
+    implementation "com.github.riccardobl.DDSWriter:dds_writer:1.3.2"
+    implementation "com.github.Jeddic:particlemonkey:1.0.2"
 
-    implementation 'org.jmonkeyengine:jme3-effects:' + jmonkeyengineVersion
-    implementation 'org.jmonkeyengine:jme3-jbullet:' + jmonkeyengineVersion
-    implementation 'org.jmonkeyengine:jme3-awt-dialogs:' + jmonkeyengineVersion
-    runtimeOnly 'org.jmonkeyengine:jme3-lwjgl3:' + jmonkeyengineVersion
+    implementation "org.apache.logging.log4j:log4j-api:2.25.3"
+    implementation "org.apache.logging.log4j:log4j-core:2.25.3"
 
-    implementation 'com.simsilica:lemur:1.16.0'
-    implementation 'com.simsilica:lemur-proto:1.13.0'
-    implementation 'org.apache.logging.log4j:log4j-core:2.25.3'
-    implementation 'org.apache.logging.log4j:log4j-api:2.25.3'
-    implementation 'com.github.riccardobl.DDSWriter:dds_writer:1.3.2'
-    implementation 'com.github.Jeddic:particlemonkey:1.0.2'
-    implementation 'com.github.stephengold:Minie:7.7.0'
+    implementation "org.codehaus.groovy:groovy:3.0.21"
+    implementation "org.codehaus.groovy:groovy-jsr223:3.0.21"
+
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 }
 
+kotlin {
+    jvmToolchain(17)
+}
+
+configurations.configureEach {
+    exclude group: "org.jmonkeyengine", module: "jme3-lwjgl"
+    exclude group: "org.lwjgl", module: "lwjgl"
+}
+
 distZip {
-    //having a degenerate folder within the dist zip complicates generating the other zips
     eachFile { file ->
         String path = file.relativePath
-        file.setPath(path.substring(path.indexOf("/") + 1, path.length()))
+        file.setPath(path.substring(path.indexOf("/") + 1))
     }
     includeEmptyDirs(false)
 }
 
-//See https://api.adoptium.net/v3/assets/feature_releases/11/ga?image_type=jre for jre urls
 def windowsJreUrl = "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.6%2B10/OpenJDK17U-jre_x64_windows_hotspot_17.0.6_10.zip"
 def linuxJreUrl = "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.6%2B10/OpenJDK17U-jre_x64_linux_hotspot_17.0.6_10.tar.gz"
 def macJreUrl = "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.6%2B10/OpenJDK17U-jre_x64_mac_hotspot_17.0.6_10.tar.gz"
 
-
-task downloadWindowsJre(type: Download) {
+task downloadWindowsJre(type: de.undercouch.gradle.tasks.download.Download) {
     src windowsJreUrl
     dest new File(buildDir, '/jres/windowsJre.zip')
     overwrite false
@@ -88,27 +91,28 @@ task downloadAndUnzipWindowsJre(dependsOn: downloadWindowsJre, type: Copy) {
     into "${buildDir}/jres/windowsJre/"
     includeEmptyDirs(false)
     filesMatching("**") {
-        it.path = it.path.replaceAll("^[a-zA-Z0-9.+-]*[/\\\\]", "jre/") //rename the top level to something standard so the rest of the script will be easier
+        it.path = it.path.replaceAll("^[a-zA-Z0-9.+-]*[/\\\\]", "jre/")
     }
 }
 
 task buildWindowsDistribution(dependsOn: [distZip, downloadAndUnzipWindowsJre], type: Copy) {
     group 'distribution'
-    from files("${projectDir}/scripts/desktopDeployment/OrbitPi.bat"), zipTree(distZip.archiveFile), "${buildDir}/jres/windowsJre"
+    from files("${projectDir}/scripts/desktopDeployment/OrbitPi.bat")
+    from zipTree(distZip.archiveFile)
+    from "${buildDir}/jres/windowsJre"
     into new File(buildDir, 'distributions/OrbitPi-windows')
     includeEmptyDirs false
-    exclude 'bin/**' //we are adding our own run scripts, exclude the ones coming from distZip
+    exclude 'bin/**'
 }
 
-task zipWindowsDistribution( dependsOn:buildWindowsDistribution, type: Zip) {
+task zipWindowsDistribution(dependsOn: buildWindowsDistribution, type: Zip) {
     group 'distribution'
     archiveFileName = "OrbitPi-windows.zip"
     destinationDirectory = file("$buildDir/distributions")
     from "$buildDir/distributions/OrbitPi-windows"
 }
 
-
-task downloadLinuxJre(type: Download) {
+task downloadLinuxJre(type: de.undercouch.gradle.tasks.download.Download) {
     src linuxJreUrl
     dest new File(buildDir, '/jres/linuxJre.tar.gz')
     overwrite false
@@ -119,39 +123,30 @@ task downloadAndUnzipLinuxJre(dependsOn: downloadLinuxJre, type: Copy) {
     into "${buildDir}/jres/linuxJre/"
     includeEmptyDirs(false)
     filesMatching("**") {
-        it.path = it.path.replaceAll("^[a-zA-Z0-9.+-]*[/\\\\]", "jre/") //rename the top level to something standard so the rest of the script will be easier
+        it.path = it.path.replaceAll("^[a-zA-Z0-9.+-]*[/\\\\]", "jre/")
     }
 }
 
 task buildLinuxDistribution(dependsOn: [distZip, downloadAndUnzipLinuxJre], type: Copy) {
     group 'distribution'
-    from files("${projectDir}/scripts/desktopDeployment/OrbitPi.sh"){
+    from files("${projectDir}/scripts/desktopDeployment/OrbitPi.sh") {
         fileMode 0755
     }
     from zipTree(distZip.archiveFile)
     from "${buildDir}/jres/linuxJre"
     into new File(buildDir, 'distributions/OrbitPi-linux')
     includeEmptyDirs false
-    exclude 'bin/**' //we are adding our own run scripts, exclude the ones coming from distZip
+    exclude 'bin/**'
 }
 
-task zipLinuxDistribution( dependsOn:buildLinuxDistribution, type: Zip) {
+task zipLinuxDistribution(dependsOn: buildLinuxDistribution, type: Zip) {
     group 'distribution'
     archiveFileName = "OrbitPi-linux.tar.gz"
     destinationDirectory = file("$buildDir/distributions")
-    from ("$buildDir/distributions/OrbitPi-linux"){
-      include('**.sh')
-      include('**/java')
-      fileMode 0755
-    }
-    from ("$buildDir/distributions/OrbitPi-linux"){
-        exclude('**.sh')
-        exclude('**/java')
-    }
+    from "$buildDir/distributions/OrbitPi-linux"
 }
 
-
-task downloadMacJre(type: Download) {
+task downloadMacJre(type: de.undercouch.gradle.tasks.download.Download) {
     src macJreUrl
     dest new File(buildDir, '/jres/macJre.tar.gz')
     overwrite false
@@ -162,68 +157,32 @@ task downloadAndUnzipMacJre(dependsOn: downloadMacJre, type: Copy) {
     into "${buildDir}/jres/macJre/"
     includeEmptyDirs(false)
     filesMatching("**") {
-        it.path = it.path.replaceAll("^[a-zA-Z0-9.+-]*[/\\\\]", "jre/") //rename the top level to something standard so the rest of the script will be easier
+        it.path = it.path.replaceAll("^[a-zA-Z0-9.+-]*[/\\\\]", "jre/")
     }
 }
 
 task buildMacDistribution(dependsOn: [distZip, downloadAndUnzipMacJre], type: Copy) {
     group 'distribution'
-    from files("${projectDir}/scripts/desktopDeployment/OrbitPi.command"){
+    from files("${projectDir}/scripts/desktopDeployment/OrbitPi.command") {
         fileMode 0755
     }
-    from zipTree(distZip.archiveFile) 
+    from zipTree(distZip.archiveFile)
     from "${buildDir}/jres/macJre"
     into new File(buildDir, 'distributions/OrbitPi-mac')
     includeEmptyDirs false
-    exclude 'bin/**' //we are adding our own run scripts, exclude the ones coming from distZip
+    exclude 'bin/**'
 }
 
-task zipMacDistribution( dependsOn:buildMacDistribution, type: Zip) {
+task zipMacDistribution(dependsOn: buildMacDistribution, type: Zip) {
     group 'distribution'
     archiveFileName = "OrbitPi-mac.tar.gz"
     destinationDirectory = file("$buildDir/distributions")
-    from ("$buildDir/distributions/OrbitPi-mac"){
-      include('**.command')
-      include('**/java')
-      fileMode 0755
-    }
-    from ("$buildDir/distributions/OrbitPi-mac"){
-        exclude('**.command')
-        exclude('**/java')
-    }
+    from "$buildDir/distributions/OrbitPi-mac"
 }
 
-task buildAllDistributions{
+task buildAllDistributions {
     group 'distribution'
     dependsOn 'zipWindowsDistribution'
     dependsOn 'zipLinuxDistribution'
     dependsOn 'zipMacDistribution'
-
-    doLast {
-        println("Distributions created in build/distributions folder")
-    }
-}
-
-// cleanup tasks
-clean.dependsOn('cleanDLLs', 'cleanDyLibs', 'cleanLogs', 'cleanSOs')
-task cleanDLLs(type: Delete) {
-    delete fileTree(dir: '.', include: '*.dll')
-}
-task cleanDyLibs(type: Delete) {
-    delete fileTree(dir: '.', include: '*.dylib')
-}
-task cleanLogs(type: Delete) {
-    delete fileTree(dir: '.', include: 'hs_err_pid*.log')
-}
-task cleanSOs(type: Delete) {
-    delete fileTree(dir: '.', include: '*.so')
-}
-
-task fund(){
-    doLast {
-       java.awt.Desktop.desktop.browse "https://start.jmonkeyengine.org/#!funding=JME_DESKTOP,JME_EFFECTS,LEMUR,LOG4J2,16283%2FDDSWriter,8113%2F189b56af-a1be-4036-8ac7-2b62a94935ff,16130%2F1a85df6f-4bb6-4c85-9e77-b5119662ed54,14991%2F929c156b-3b0e-42c7-8474-f6c58ed8a1d5,11511%2F38308161-c3cf-4e23-8754-528ca8387c11,JME_JBULLET".toURI()
-    }
-}
-kotlin {
-    jvmToolchain(17)
 }

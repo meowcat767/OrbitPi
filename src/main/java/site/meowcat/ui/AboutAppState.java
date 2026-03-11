@@ -6,8 +6,8 @@ import com.jme3.app.state.BaseAppState;
 import com.simsilica.lemur.Button;
 import com.simsilica.lemur.Container;
 import com.simsilica.lemur.Label;
-
 import java.awt.*;
+
 
 public class AboutAppState extends BaseAppState {
     private Container window;
@@ -20,9 +20,8 @@ public class AboutAppState extends BaseAppState {
         window.addChild(new Label(""));
         window.addChild(new Label("Memorise pi by hitting the correct digits!"));
         window.addChild(new Label("Full attributions in ATTRIBUTIONS.txt"));
-        window.addChild(new Label("Written by meowcat767));
-        window.addChild(new Label("Built with TsukiEngine 1, CLion and <3!"));
-        window.addChild(new Label("This is a tech demo of TsukiEngine 1, written in Java."))
+        window.addChild(new Label("Written by meowcat767"));
+        window.addChild(new Label("Made with IntelliJ IDEA and <3!"));
         window.addChild(new Label(""));
         Button back  = window.addChild(new Button("Back"));
         back.addClickCommands(source -> {
