@@ -59,6 +59,21 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 }
 
+configurations.all {
+
+    // Force the correct engine version
+    resolutionStrategy.force(
+            "org.jmonkeyengine:jme3-core:3.8.1-stable",
+            "org.jmonkeyengine:jme3-desktop:3.8.1-stable",
+            "org.jmonkeyengine:jme3-effects:3.8.1-stable",
+            "org.jmonkeyengine:jme3-jbullet:3.8.1-stable",
+            "org.jmonkeyengine:jme3-lwjgl3:3.8.1-stable"
+    )
+
+    // Completely ban LWJGL2 backend
+    exclude group: "org.jmonkeyengine", module: "jme3-lwjgl"
+}
+
 kotlin {
     jvmToolchain(17)
 }
