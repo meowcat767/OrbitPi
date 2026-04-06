@@ -60,6 +60,6 @@ The resulting ZIP file in `build/distributions` will contain the game and all ne
 
 ## Credits
 Originally written for the UTC Portsmouth "Pi Game Coding Competition."
-Developed by site.meowcat.
+Developed by meowcat
 
 
