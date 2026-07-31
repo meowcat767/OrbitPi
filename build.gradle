@@ -1,203 +1,33 @@
 plugins {
-    id 'application'
-    id 'java'
-    id "de.undercouch.download" version "5.1.0"
     id 'idea'
     id "io.github.0ffz.github-packages" version "1.2.1"
-    id 'org.jetbrains.kotlin.jvm'
 }
-
-description = 'OrbitPi application'
 
 ext.jmonkeyengineVersion = '3.8.1-stable'
-def mainClassName = 'site.meowcat.OrbitPi'
 
-application {
-    mainClass = mainClassName
-    if (System.getProperty("os.name").toLowerCase().contains("mac")) {
-        applicationDefaultJvmArgs = ['-XstartOnFirstThread']
+allprojects {
+    repositories {
+        google()
+        maven { url "https://jitpack.io" }
+        mavenCentral()
+        mavenLocal()
     }
 }
 
-jar {
-    manifest {
-        attributes 'Main-Class': mainClassName
+subprojects {
+    apply plugin: 'idea'
+    
+    configurations.all {
+        resolutionStrategy.force(
+                "org.jmonkeyengine:jme3-core:$jmonkeyengineVersion"
+        )
+        exclude group: "org.jmonkeyengine", module: "jme3-lwjgl"
     }
-}
-
-repositories {
-    maven { url "https://jitpack.io" }
-    mavenCentral()
-    mavenLocal()
-}
-
-dependencies {
-
-    implementation "org.jmonkeyengine:jme3-core:$jmonkeyengineVersion"
-    implementation "org.jmonkeyengine:jme3-desktop:$jmonkeyengineVersion"
-    implementation "org.jmonkeyengine:jme3-effects:$jmonkeyengineVersion"
-    implementation "org.jmonkeyengine:jme3-jbullet:$jmonkeyengineVersion"
-    implementation "org.jmonkeyengine:jme3-awt-dialogs:$jmonkeyengineVersion"
-
-    runtimeOnly "org.jmonkeyengine:jme3-lwjgl3:$jmonkeyengineVersion"
-    runtimeOnly "org.jmonkeyengine:jme3-jogg:$jmonkeyengineVersion"
-    runtimeOnly "org.jmonkeyengine:jme3-plugins:$jmonkeyengineVersion"
-
-    implementation "com.simsilica:lemur:1.16.0"
-    implementation "com.simsilica:lemur-proto:1.13.0"
-    implementation "com.github.stephengold:Minie:7.7.0"
-
-    implementation "com.github.riccardobl.DDSWriter:dds_writer:1.3.2"
-    implementation "com.github.Jeddic:particlemonkey:1.0.2"
-
-    implementation "org.apache.logging.log4j:log4j-api:2.25.3"
-    implementation "org.apache.logging.log4j:log4j-core:2.25.3"
-
-    implementation "org.codehaus.groovy:groovy:3.0.21"
-    implementation "org.codehaus.groovy:groovy-jsr223:3.0.21"
-
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-}
-
-configurations.all {
-
-    // Force the correct engine version
-    resolutionStrategy.force(
-            "org.jmonkeyengine:jme3-core:3.8.1-stable",
-            "org.jmonkeyengine:jme3-desktop:3.8.1-stable",
-            "org.jmonkeyengine:jme3-effects:3.8.1-stable",
-            "org.jmonkeyengine:jme3-jbullet:3.8.1-stable",
-            "org.jmonkeyengine:jme3-lwjgl3:3.8.1-stable"
-    )
-
-    // Completely ban LWJGL2 backend
-    exclude group: "org.jmonkeyengine", module: "jme3-lwjgl"
-}
-
-kotlin {
-    jvmToolchain(17)
-}
-
-configurations.configureEach {
-    exclude group: "org.jmonkeyengine", module: "jme3-lwjgl"
-    exclude group: "org.lwjgl", module: "lwjgl"
-}
-
-distZip {
-    eachFile { file ->
-        String path = file.relativePath
-        file.setPath(path.substring(path.indexOf("/") + 1))
-    }
-    includeEmptyDirs(false)
-}
-
-def windowsJreUrl = "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.6%2B10/OpenJDK17U-jre_x64_windows_hotspot_17.0.6_10.zip"
-def linuxJreUrl = "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.6%2B10/OpenJDK17U-jre_x64_linux_hotspot_17.0.6_10.tar.gz"
-def macJreUrl = "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.6%2B10/OpenJDK17U-jre_x64_mac_hotspot_17.0.6_10.tar.gz"
-
-task downloadWindowsJre(type: de.undercouch.gradle.tasks.download.Download) {
-    src windowsJreUrl
-    dest new File(buildDir, '/jres/windowsJre.zip')
-    overwrite false
-}
-
-task downloadAndUnzipWindowsJre(dependsOn: downloadWindowsJre, type: Copy) {
-    from zipTree(downloadWindowsJre.dest)
-    into "${buildDir}/jres/windowsJre/"
-    includeEmptyDirs(false)
-    filesMatching("**") {
-        it.path = it.path.replaceAll("^[a-zA-Z0-9.+-]*[/\\\\]", "jre/")
-    }
-}
-
-task buildWindowsDistribution(dependsOn: [distZip, downloadAndUnzipWindowsJre], type: Copy) {
-    group 'distribution'
-    from files("${projectDir}/scripts/desktopDeployment/OrbitPi.bat")
-    from zipTree(distZip.archiveFile)
-    from "${buildDir}/jres/windowsJre"
-    into new File(buildDir, 'distributions/OrbitPi-windows')
-    includeEmptyDirs false
-    exclude 'bin/**'
-}
-
-task zipWindowsDistribution(dependsOn: buildWindowsDistribution, type: Zip) {
-    group 'distribution'
-    archiveFileName = "OrbitPi-windows.zip"
-    destinationDirectory = file("$buildDir/distributions")
-    from "$buildDir/distributions/OrbitPi-windows"
-}
-
-task downloadLinuxJre(type: de.undercouch.gradle.tasks.download.Download) {
-    src linuxJreUrl
-    dest new File(buildDir, '/jres/linuxJre.tar.gz')
-    overwrite false
-}
-
-task downloadAndUnzipLinuxJre(dependsOn: downloadLinuxJre, type: Copy) {
-    from tarTree(downloadLinuxJre.dest)
-    into "${buildDir}/jres/linuxJre/"
-    includeEmptyDirs(false)
-    filesMatching("**") {
-        it.path = it.path.replaceAll("^[a-zA-Z0-9.+-]*[/\\\\]", "jre/")
-    }
-}
-
-task buildLinuxDistribution(dependsOn: [distZip, downloadAndUnzipLinuxJre], type: Copy) {
-    group 'distribution'
-    from files("${projectDir}/scripts/desktopDeployment/OrbitPi.sh") {
-        fileMode 0755
-    }
-    from zipTree(distZip.archiveFile)
-    from "${buildDir}/jres/linuxJre"
-    into new File(buildDir, 'distributions/OrbitPi-linux')
-    includeEmptyDirs false
-    exclude 'bin/**'
-}
-
-task zipLinuxDistribution(dependsOn: buildLinuxDistribution, type: Zip) {
-    group 'distribution'
-    archiveFileName = "OrbitPi-linux.tar.gz"
-    destinationDirectory = file("$buildDir/distributions")
-    from "$buildDir/distributions/OrbitPi-linux"
-}
-
-task downloadMacJre(type: de.undercouch.gradle.tasks.download.Download) {
-    src macJreUrl
-    dest new File(buildDir, '/jres/macJre.tar.gz')
-    overwrite false
-}
-
-task downloadAndUnzipMacJre(dependsOn: downloadMacJre, type: Copy) {
-    from tarTree(downloadMacJre.dest)
-    into "${buildDir}/jres/macJre/"
-    includeEmptyDirs(false)
-    filesMatching("**") {
-        it.path = it.path.replaceAll("^[a-zA-Z0-9.+-]*[/\\\\]", "jre/")
-    }
-}
-
-task buildMacDistribution(dependsOn: [distZip, downloadAndUnzipMacJre], type: Copy) {
-    group 'distribution'
-    from files("${projectDir}/scripts/desktopDeployment/OrbitPi.command") {
-        fileMode 0755
-    }
-    from zipTree(distZip.archiveFile)
-    from "${buildDir}/jres/macJre"
-    into new File(buildDir, 'distributions/OrbitPi-mac')
-    includeEmptyDirs false
-    exclude 'bin/**'
-}
-
-task zipMacDistribution(dependsOn: buildMacDistribution, type: Zip) {
-    group 'distribution'
-    archiveFileName = "OrbitPi-mac.tar.gz"
-    destinationDirectory = file("$buildDir/distributions")
-    from "$buildDir/distributions/OrbitPi-mac"
 }
 
 task buildAllDistributions {
     group 'distribution'
-    dependsOn 'zipWindowsDistribution'
-    dependsOn 'zipLinuxDistribution'
-    dependsOn 'zipMacDistribution'
+    dependsOn ':desktop:zipWindowsDistribution'
+    dependsOn ':desktop:zipLinuxDistribution'
+    dependsOn ':desktop:zipMacDistribution'
 }
