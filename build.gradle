@@ -22,6 +22,7 @@ subprojects {
                 "org.jmonkeyengine:jme3-core:$jmonkeyengineVersion"
         )
         exclude group: "org.jmonkeyengine", module: "jme3-lwjgl"
+        exclude group: "org.jmonkeyengine", module: "jme3-jbullet"
     }
 }
 
